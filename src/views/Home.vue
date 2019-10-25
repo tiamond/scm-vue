@@ -4,7 +4,7 @@
     <el-container>
       <el-header height="100px">
         <span class="sysname">信息管理系统</span>
-        <span class="curtime">{{ nowTime }}</span>
+        <span class="curtime">当前用户{{curLogin}}{{ nowTime }}</span>
           
       </el-header>
 
@@ -110,6 +110,11 @@ export default {
     }
   },
   computed: {
+    curLogin: {
+      get () {
+        return Cookie.get('account')
+      }
+    }
   },
   created () {
     this.getTime()
