@@ -8,8 +8,8 @@
       <el-main height="">
         <div class="login">
           <p class="tit">登录</p>
-          <el-input v-model="user.username" placeholder="请输入你的ID"></el-input>
-          <el-input v-model="user.password" type="password" placeholder="请输入密码"></el-input>
+          <el-input prefix-icon="el-icon-user" v-model="user.username" placeholder="请输入你的ID"></el-input>
+          <el-input prefix-icon="el-icon-lock" v-model="user.password" type="password" placeholder="请输入密码"></el-input>
           <p class="restip">{{resp}}</p>
           <div>
             <template>
@@ -48,13 +48,15 @@ export default {
   }, 
   methods: {
     login () {
+      let time = new Date()
       this.$store.dispatch({
         type: 'login',
-        user: this.user
+        user: this.user,
+        time,
       }).then(
         data => {
           console.log(data)
-          // this.$router.push('/')
+          this.$router.push('/')
         }
       ).catch(
         err => {

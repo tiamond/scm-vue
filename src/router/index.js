@@ -8,10 +8,24 @@ const routes = [
   {
     path: '/',
     component: Home,
+    redirect: '/user-management',
     children: [
       {
-        path: '/',
-        name: 'home'
+        path: '/user-management',
+        name: 'UserManagement',
+        component: () => import('@/views/components/UserManagement')
+      }, {
+        path: '/supplier',
+        name: 'Supplier',
+        component: () => import('@/views/components/Supplier')
+      }, {
+        path: '/add-purchase-note',
+        name: '/AddPurchaseNote',
+        component: () => import('@/views/components/AddPurchaseNote')
+      }, {
+        path: '/done-purchase-note',
+        name: 'DonePurchaseNote',
+        component: () => import('@/views/components/AddPurchaseNote')
       }
     ]
   }, {
