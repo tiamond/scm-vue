@@ -31,7 +31,6 @@ export default new Vuex.Store({
             const result = resp.data
             if (result.code === 2) {
               resolve(result)
-              console.log(result)
               Cookie.set('account', result.data.user.account)
               Cookie.set('token', result.data.token)
             } else {
@@ -42,7 +41,6 @@ export default new Vuex.Store({
       })
     },
     getUserList ({commit}, payload) {
-      console.log(payload.page)
       return new Promise((resolve, reject) => {
         axios({
           method: 'GET',

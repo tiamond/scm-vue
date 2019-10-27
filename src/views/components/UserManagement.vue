@@ -156,6 +156,20 @@ export default {
     ...mapState(['userList'])
   },
   mounted () {
+    this.$store.dispatch({
+      type: 'getUserList'
+    }).catch(
+      resp => {
+        const result = resp.data
+        if (result.code !== 2) {
+          this.centerDialogVisible = true
+          this.titMsg = result.message+'， 3秒后跳转登录页面'
+          setTimeout(() => {
+            this.$router.push('/login')
+          }, 3000);
+        }
+      }
+    )
   },
   methods: {
     pageChange (page) {
@@ -209,11 +223,13 @@ export default {
                 this.loading = false
               }
             )
+            this.initData()
           } else {
             this.loading = false
             this.centerDialogVisible = true
             this.titMsg = result.message
           }
+          
         }
       )
     },
@@ -256,6 +272,15 @@ export default {
       this.dialogFormVisible = true
       this.user.createDate = this.setNowTime()
       this.updateURL = 'api/main/system/user/add'
+    },
+    // 初始化数据
+    initData () {
+      this.user.account= ''
+      this.user.name= ''
+      this.user.passWord= ''
+      this.user.createDate= ''
+      this.user.status= -1
+      this.user.modelcodes= []
     }
   }
 }

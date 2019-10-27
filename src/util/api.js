@@ -17,7 +17,7 @@ axios.interceptors.response.use(function (response) {
     if(result.code===1){
         // console.log(window.location)
         // alert(result.message)
-        window.location = window.location.origin + '/#/login'
+        // window.location = window.location.origin + '/#/login'
     }
     return response;
     
