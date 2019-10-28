@@ -49,21 +49,25 @@ export default {
   methods: {
     login () {
       let time = new Date()
-      this.$store.dispatch({
-        type: 'login',
-        user: this.user,
-        time,
-      }).then(
-        data => {
-          console.log(data)
-          this.$router.push('/')
-        }
-      ).catch(
-        err => {
-          console.log(err)
-          this.resp = err.message
-        }
-      )
+      if (this.user.username == '' || this.user.password == '') {
+        this.resp = '账号密码不能为空'
+      } else {
+        this.$store.dispatch({
+          type: 'login',
+          user: this.user,
+          time,
+        }).then(
+          data => {
+            console.log(data)
+            this.$router.push('/')
+          }
+        ).catch(
+          err => {
+            console.log(err)
+            this.resp = err.message
+          }
+        )
+      }
     }
   }
 }

@@ -52,7 +52,7 @@ export default new Vuex.Store({
           resp => {
             const result = resp.data
             if (result.list) {
-              resolve(result.list)
+              resolve(result)
               commit({
                 type: 'setUserList',
                 userList: result.list

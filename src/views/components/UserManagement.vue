@@ -118,12 +118,13 @@
         <el-button type="primary" @click="centerDialogVisible = false">确 定</el-button>
       </span>
     </el-dialog>
+    
     <!-- 分页 -->
     <el-pagination
       background
       layout="prev, pager, next"
       @current-change="pageChange"
-      :total="100">
+      :total="total">
     </el-pagination>
   </div>
 </template>
@@ -142,6 +143,7 @@ export default {
       creOrUpdMsg: '',
       dialogMsg: '',
       updateURL: '',
+      total: 0,
       user: {
         account: '',
         name: '',
@@ -158,7 +160,11 @@ export default {
   mounted () {
     this.$store.dispatch({
       type: 'getUserList'
-    }).catch(
+    }).then(
+      data => {
+        this.total = data.total
+      }
+    ).catch(
       resp => {
         const result = resp.data
         if (result.code !== 2) {
@@ -173,11 +179,15 @@ export default {
   },
   methods: {
     pageChange (page) {
-      console.log(page)
+      this.loading = true
       this.$store.dispatch({
         type: 'getUserList',
         page
-      })
+      }).then(
+        data => {
+          this.loading = false
+        }
+      )
     },
     setNowTime() {
       let date = new Date()

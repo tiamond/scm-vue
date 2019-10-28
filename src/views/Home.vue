@@ -20,14 +20,14 @@
             <el-collapse v-model="activeName" accordion>
               <span class="tit">SCM管理系统</span>
               <el-collapse-item title="系统管理" name="1">
-                <el-menu-item @click="showUserList" index="/user-management">用户管理</el-menu-item>
-                <el-menu-item index="/login">重新登录</el-menu-item>
-                <el-menu-item index="/login">退出系统</el-menu-item>
+                <el-menu-item @click="showUserList" index="/sys-manage/user-management">用户管理</el-menu-item>
+                <el-menu-item @click="logout" index="/sys-manage/login">重新登录</el-menu-item>
+                <el-menu-item @click="sysout" index="">退出系统</el-menu-item>
               </el-collapse-item>
               <el-collapse-item title="采购管理" name="2">
-                <el-menu-item index="/supplier">供应商管理</el-menu-item>
-                <el-menu-item index="/add-purchase-note">新添采购单</el-menu-item>
-                <el-menu-item index="/done-purchase-note">采购单了结</el-menu-item>
+                <el-menu-item @click="toSupplier" index="/purchase/supplier">供应商管理</el-menu-item>
+                <el-menu-item index="/purchase/add-purchase-note">新添采购单</el-menu-item>
+                <el-menu-item index="/purchase/done-purchase-note">采购单了结</el-menu-item>
                 <el-menu-item index="2-4">采购单查询</el-menu-item>
               </el-collapse-item>
               <el-collapse-item title="仓库管理" name="3">
@@ -68,16 +68,26 @@
 
         <el-main>
           <el-breadcrumb separator-class="el-icon-arrow-right">
-            <el-breadcrumb-item v-for="(item, index) in pathList" :key="index">
-              {{ item }}
-            </el-breadcrumb-item>
-            
+            <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
+            <el-breadcrumb-item :to="{ path: `/${part}/${tit}` }">{{ part | partFilter }}</el-breadcrumb-item>
+            <el-breadcrumb-item :to="{ path: `/${part}/${tit}` }">{{ tit | titFilter }}</el-breadcrumb-item>
           </el-breadcrumb>
           <router-view></router-view>
         </el-main>
-
       </el-container>
     </el-container>
+    <!-- 退出系统对话框 -->
+    <el-dialog
+      title="提示"
+      :visible.sync="logoutDialogVisible"
+      width="30%"
+      :before-close="handleClose">
+      <span>确认退出系统，并关闭窗口吗？</span>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="dialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="confirmSysOut">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -93,7 +103,10 @@ export default {
       activeName: '1',
       nowTime: '',
       pathList: ['首页', '用户管理'],
-      userList: []
+      userList: [],
+      logoutDialogVisible: false,
+      part: '',
+      tit: ''
     }
   },
   filters: {
@@ -106,6 +119,20 @@ export default {
       let mm = date.getMinutes()
       let s = date.getSeconds()
       return `${y}-${m < 10 ? '0'+m : m}-${d < 10 ? '0'+d : d} ${h < 10 ? '0'+h : h}:${mm < 10 ? '0'+mm : mm}:${s < 10 ? '0'+s : s}`
+    },
+    partFilter (val) {
+      if (val == 'purchase') {
+        return '采购管理'
+      } else if (val == 'sys-manage') {
+        return '系统管理'
+      }
+    },
+    titFilter (val) {
+      if (val == 'user-management') {
+        return '用户管理'
+      } else if (val == 'supplier') {
+        return '供应商管理'
+      }
     }
   },
   methods: {
@@ -128,6 +155,30 @@ export default {
       ).catch(
         err => console.log(err)
       )
+    },
+    logout () {
+      axios({
+        method: 'GET',
+        url: '/api/sys/logout'
+      }).then(
+        resp => {
+          console.log(resp)
+        }
+      )
+    },
+    sysout () {
+      this.logoutDialogVisible = true
+    },
+    confirmSysOut () {
+      this.logout()
+      this.logoutDialogVisible = false
+      window.opener = null
+      location.href = 'about:blank'
+      window.close()
+    },
+    // 供应商管理
+    toSupplier () {
+      this.pathList = ['首页', '供应商管理']
     }
   },
   computed: {
@@ -135,6 +186,17 @@ export default {
   },
   created () {
     this.getTime()
+  },
+  watch: {
+    $route: {
+      handler () {
+        this.part = this.$route.path.split('/')[1]
+        this.tit = this.$route.path.split('/')[2]
+        console.log(this.part, this.tit);
+        
+      },
+      immediate: true
+    }
   }
 }
 </script>

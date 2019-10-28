@@ -8,28 +8,28 @@ const routes = [
   {
     path: '/',
     component: Home,
-    redirect: '/user-management',
+    redirect: '/sys-manage/user-management',
     children: [
       {
-        path: '/user-management',
+        path: '/sys-manage/user-management',
         name: 'UserManagement',
         component: () => import('@/views/components/UserManagement')
       }, {
-        path: '/supplier',
+        path: '/purchase/supplier',
         name: 'Supplier',
         component: () => import('@/views/components/Supplier')
       }, {
-        path: '/add-purchase-note',
+        path: '/purchase/add-purchase-note',
         name: '/AddPurchaseNote',
         component: () => import('@/views/components/AddPurchaseNote')
       }, {
-        path: '/done-purchase-note',
+        path: '/purchase/done-purchase-note',
         name: 'DonePurchaseNote',
         component: () => import('@/views/components/AddPurchaseNote')
       }
     ]
   }, {
-    path: '/login',
+    path: '/sys-manage/login',
     name: 'login',
     component: () => import('@/views/Login')
   }
