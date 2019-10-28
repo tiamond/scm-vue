@@ -132,6 +132,8 @@ export default {
         return '用户管理'
       } else if (val == 'supplier') {
         return '供应商管理'
+      } else if (val == 'add-purchase-note') {
+        return '新添采购单'
       }
     }
   },

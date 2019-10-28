@@ -9,7 +9,7 @@
           @click="addSupplier" 
           style="margin: 0 20px"
           size="small">
-          创建用户
+          添加供应商
         </el-button>
       <el-form-item label="查找供应商">
         <el-input v-model="searchKey" placeholder="请输入供应商名称或者编号"></el-input>
@@ -43,13 +43,13 @@
         class="cmondBtn">
         <template slot-scope="scope">
           <el-button
-            @click.native.prevent="showDialog(scope.$index, userList)"
+            @click.native.prevent="showDialog(scope.$index, SupplierListData)"
             type="primary"
             size="mini">
             修改
           </el-button>
           <el-button
-            @click.native.prevent="deleteUser(scope.$index, userList)"
+            @click.native.prevent="deleteSupplier(scope.$index, SupplierListData)"
             type="danger"
             size="mini">
             移除
@@ -58,8 +58,8 @@
       </el-table-column>
     </el-table>
 
-    <!-- 添加供应商对话框 -->
-    <el-dialog :title="dialogMsg" :visible.sync="dialogFormVisible">
+    <!-- 添加或者修改供应商对话框 -->
+    <el-dialog :title="dialogMsg" :visible.sync="dialogFormVisible" class="add-supplier">
       <el-form size="mini" :model="supplierForm" :rules="supplierRules" :inline="true" class="demo-form-inline">
         <el-form-item label="供应商编号" label-width="95px" prop="venderCode">
           <el-input v-model="supplierForm.venderCode" autocomplete="off"></el-input>
@@ -67,13 +67,13 @@
         <el-form-item label="供应商名称" label-width="95px" prop="name">
           <el-input v-model="supplierForm.name" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="密码" label-width="95px" prop="passWord">
+        <el-form-item label="密码" label-width="95px">
           <el-input v-model="supplierForm.passWord" autocomplete="off" type="password"></el-input>
         </el-form-item>
         <el-form-item label="联系人" label-width="95px" prop="contactor">
           <el-input v-model="supplierForm.contactor" autocomplete="off" type="text"></el-input>
         </el-form-item>
-        <el-form-item label="地址" label-width="95px">
+        <el-form-item label="地址" label-width="95px" prop="address">
           <el-input v-model="supplierForm.address" autocomplete="off" type="text"></el-input>
         </el-form-item>
         <el-form-item label="邮政编码" label-width="95px">
@@ -94,6 +94,39 @@
         <el-button type="primary" @click="updateSupplier">确 定</el-button>
       </div>
     </el-dialog>
+
+    <!-- 提示弹框 -->
+    <el-dialog
+      title="提示"
+      :visible.sync="centerDialogVisible"
+      width="30%"
+      center>
+      <span>{{titMsg}}</span>
+      <span slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="centerDialogVisible = false">确 定</el-button>
+      </span>
+    </el-dialog>
+
+    <!-- 是否删除对话框 -->
+    <el-dialog
+      title="提示"
+      :visible.sync="logoutDialogVisible"
+      width="30%"
+      class="deleteTip">
+      <span>确认删除该供应商吗？</span>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="logoutDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="confirmDelete">确 定</el-button>
+      </span>
+    </el-dialog>
+
+    <!-- 分页 -->
+    <el-pagination
+      background
+      layout="prev, pager, next"
+      @current-change="pageChange"
+      :total="total">
+    </el-pagination>
   </div>
 </template>
 
@@ -104,18 +137,20 @@ export default {
   name: 'Supplier',
   data () {
     return {
+      total: 0,
+      isAddOrUpd: '',
       loading: true,
       SupplierList: [],
       searchKey: '',
       SupplierListColumns: [
         { id: 'venderCode', label: '供应商编号', width: 85 },
-        { id: 'name', label: '供应商名称', width: 100 },
-        { id: 'contactor', label: '联系人', width: 85 },
+        { id: 'name', label: '供应商名称', width: 90 },
+        { id: 'contactor', label: '联系人', width: 70 },
         { id: 'address', label: '地址', width: 185 },
         { id: 'postCode', label: '邮政编码', width: 85 },
-        { id: 'createDate', label: '注册日期', width: 110 },
+        { id: 'createDate', label: '注册日期', width: 140 },
         { id: 'tel', label: '电话', width: 120 },
-        { id: 'fax', label: '传真', width: 95 }
+        { id: 'fax', label: '传真', width: 90 }
       ],
       supplierRules: {
         venderCode: [
@@ -133,13 +168,14 @@ export default {
         tel: [
           { required: true, message: '请输入联系人', trigger: 'blur' }
         ],
-        passWord: [
+        address: [
           { required: true }
         ]
 
       },
       dialogMsg: '添加供应商',
       dialogFormVisible: false,
+      logoutDialogVisible: false,
       creOrUpdMsg: '注册日期',
       supplierForm: {
         venderCode: '',
@@ -151,36 +187,115 @@ export default {
         createDate: '',
         tel: '',
         fax: ''
-      }
+      },
+      centerDialogVisible: false,
+      titMsg: '',
+      willbeDelete: ''
     }
   },
-  created (page = 1, venderCode, name) {
-    axios({
-      method: 'GET',
-      url: '/api/main/purchase/vender/show',
-      params: {
-        page,
-        venderCode,
-        name,
-      }
-    }).then(
-      resp => {
-        console.log(resp.data)
-        this.SupplierList = resp.data.list
-        this.loading = false
-      }
-    ).catch(
-      err => console.log(err)
-    )
+  created () {
+    this.getSupplierList()
   },
   methods: {
+    // 获取供应商列表
+    getSupplierList (page = 1, venderCode, name) {
+      axios({
+        method: 'GET',
+        url: '/api/main/purchase/vender/show',
+        params: {
+          page,
+          venderCode,
+          name,
+        }
+      }).then(
+        resp => {
+          console.log(resp.data)
+          this.SupplierList = resp.data.list
+          this.total = resp.data.total
+          this.loading = false
+        }
+      ).catch(
+        err => console.log(err)
+      )
+    },
+    // 获取当前时间
+    setNowTime() {
+      let date = new Date()
+      let y = date.getFullYear()
+      let m = date.getMonth()+1
+      let d = date.getDate()
+      let h = date.getHours()
+      let mm = date.getMinutes()
+      let s = date.getSeconds()
+      return `${y}-${m < 10 ? '0'+m : m}-${d < 10 ? '0'+d : d} ${h < 10 ? '0'+h : h}:${mm < 10 ? '0'+mm : mm}:${s < 10 ? '0'+s : s}`
+    },
     // 添加供应商
     addSupplier () {
+      this.isAddOrUpd = 'add'
+      this.dialogMsg = '添加供应商'
+      this.creOrUpdMsg = '注册日期'
       console.log('添加供应商')
       this.dialogFormVisible = true
+      this.supplierForm.createDate = this.setNowTime()
     },
+    // 删除供应商
+    deleteSupplier (index, data) {
+      const supplier = data[index]
+      this.logoutDialogVisible = true
+      this.willbeDelete = supplier.venderCode
+    },
+    // 确认删除
+    confirmDelete () {
+      axios({
+        method: 'POST',
+        url: 'api/main/purchase/vender/delete',
+        data: qs.stringify({
+          venderCode: this.willbeDelete
+        })
+      }).then(
+        resp => {
+          console.log(resp.data)
+          if (resp.data.code === 2) {
+            this.logoutDialogVisible = false
+            this.centerDialogVisible = true
+            this.titMsg = resp.data.message
+            this.getSupplierList()
+          }
+        }
+      )
+    },
+    // 修改供应商信息
+    showDialog (index, data) {
+      this.isAddOrUpd = 'update'
+      const supplier = data[index]
+      this.dialogFormVisible = true
+      this.supplierForm = supplier
+    },
+    // 更新或者创建供应商
     updateSupplier () {
-      console.log('更新供应商信息')
+      if (this.supplierForm.passWord == '') {
+        this.supplierForm.passWord = this.supplierForm.venderCode
+      }
+      axios({
+        method: 'POST',
+        url: `/api/main/purchase/vender/${this.isAddOrUpd}`,
+        data: qs.stringify(this.supplierForm)
+      }).then(
+        resp => {
+          console.log(resp)
+          const result = resp.data
+          if (result.code == 2) {
+            this.dialogFormVisible = false
+            this.centerDialogVisible = true
+            this.titMsg = result.message
+            this.getSupplierList()
+          }
+        }
+      )
+    },
+    // 分页
+    pageChange (page) {
+      this.getSupplierList(page)
     }
   },
   // filters: {
@@ -213,6 +328,6 @@ export default {
   height 40px
 .el-table
   margin-left 20px
->>>.el-dialog .el-dialog__body
+.add-supplier >>> .el-dialog .el-dialog__body
   height 180px
 </style>
