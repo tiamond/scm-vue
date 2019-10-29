@@ -42,8 +42,8 @@
                 <el-menu-item index="4-3">收支查询</el-menu-item>
               </el-collapse-item>
               <el-collapse-item title="销售管理" name="5">
-                <el-menu-item index="5-1">产品分类管理</el-menu-item>
-                <el-menu-item index="5-2">产品管理</el-menu-item>
+                <el-menu-item index="/sell-manage/product-category-manage">产品分类管理</el-menu-item>
+                <el-menu-item index="/sell-manage/product-manage">产品管理</el-menu-item>
                 <el-menu-item index="5-3">客户管理</el-menu-item>
                 <el-menu-item index="5-4">新添销售单</el-menu-item>
                 <el-menu-item index="5-5">销售单了结</el-menu-item>
@@ -102,7 +102,6 @@ export default {
     return {
       activeName: '1',
       nowTime: '',
-      pathList: ['首页', '用户管理'],
       userList: [],
       logoutDialogVisible: false,
       part: '',
@@ -125,6 +124,8 @@ export default {
         return '采购管理'
       } else if (val == 'sys-manage') {
         return '系统管理'
+      } else if (val = 'sell-manage') {
+        return '销售管理'
       }
     },
     titFilter (val) {
@@ -134,6 +135,10 @@ export default {
         return '供应商管理'
       } else if (val == 'add-purchase-note') {
         return '新添采购单'
+      } else if (val == 'product-category-manage') {
+        return '产品分类管理'
+      } else if (val == 'product-manage') {
+        return '产品管理'
       }
     }
   },

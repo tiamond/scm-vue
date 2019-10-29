@@ -26,6 +26,14 @@ const routes = [
         path: '/purchase/done-purchase-note',
         name: 'DonePurchaseNote',
         component: () => import('@/views/components/AddPurchaseNote')
+      }, {
+        path: '/sell-manage/product-category-manage',
+        name: 'ProductCategoryManage',
+        component: () => import('@/views/components/ProductCategoryManage')
+      }, {
+        path: '/sell-manage/product-manage',
+        name: 'ProductManage',
+        component: () => import('@/views/components/ProductManage')
       }
     ]
   }, {

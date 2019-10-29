@@ -171,7 +171,7 @@ export default {
           this.centerDialogVisible = true
           this.titMsg = result.message+'， 3秒后跳转登录页面'
           setTimeout(() => {
-            this.$router.push('/login')
+            this.$router.push('/sys-manage/login')
           }, 3000);
         }
       }

@@ -284,31 +284,35 @@ export default {
         resp => {
           console.log(resp)
           const result = resp.data
+          this.dialogFormVisible = false
+          this.centerDialogVisible = true
+          this.titMsg = result.message
           if (result.code == 2) {
-            this.dialogFormVisible = false
-            this.centerDialogVisible = true
-            this.titMsg = result.message
             this.getSupplierList()
           }
+          this.initform()
         }
       )
     },
     // 分页
     pageChange (page) {
       this.getSupplierList(page)
+    },
+    // 初始化对话框数据
+    initform () {
+      this.supplierForm.venderCode= '',
+      this.supplierForm.name= '',
+      this.supplierForm.passWord= '',
+      this.supplierForm.contactor= '',
+      this.supplierForm.address= '',
+      this.supplierForm.postCode= '',
+      this.supplierForm.createDate= '',
+      this.supplierForm.tel= '',
+      this.supplierForm.fax= ''
     }
   },
-  // filters: {
-  //   searchSuppiler (val) {
-  //     let res = this.SupplierList.filter(item => {
-  //       if (this.searchKey == '' || item.venderCode.indexOf(this.searchKey) != -1 || item.name.indexOf(this.searchKey) != -1) {
-  //         return item
-  //       }
-  //     })
-  //     return res
-  //   }
-  // },
   computed: {
+    // 模糊查找当页供应商
     SupplierListData: {
       get () {
         let res = this.SupplierList.filter(item => {
