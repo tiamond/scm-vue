@@ -138,7 +138,7 @@ export default {
     return {
       dialogFormVisible: false,
       centerDialogVisible: false,
-      loading: false,
+      loading: true,
       titMsg: '',
       creOrUpdMsg: '',
       dialogMsg: '',
@@ -151,7 +151,8 @@ export default {
         createDate: '',
         status: -1,
         modelcodes: []
-      }
+      },
+      page: 1
     }
   },
   computed: {
@@ -163,6 +164,7 @@ export default {
     }).then(
       data => {
         this.total = data.total
+        this.loading = false
       }
     ).catch(
       resp => {
@@ -180,6 +182,7 @@ export default {
   methods: {
     pageChange (page) {
       this.loading = true
+      this.page = page
       this.$store.dispatch({
         type: 'getUserList',
         page
@@ -226,7 +229,8 @@ export default {
             this.centerDialogVisible = true
             this.titMsg = result.message
             this.$store.dispatch({
-              type: 'getUserList'
+              type: 'getUserList',
+              page: this.page
             }).then(
               data => {
                 console.log(data)

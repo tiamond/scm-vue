@@ -1,6 +1,6 @@
 <template>
   <div>
-    <!-- 添加分类 -->
+    <!-- 添加 -->
     <el-button 
       class="addUser"
       type="primary" 

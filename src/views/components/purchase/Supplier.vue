@@ -11,9 +11,9 @@
           size="small">
           添加供应商
         </el-button>
+      </el-form-item>
       <el-form-item label="查找供应商">
         <el-input v-model="searchKey" placeholder="请输入供应商名称或者编号"></el-input>
-      </el-form-item>
       </el-form-item>
     </el-form>
     

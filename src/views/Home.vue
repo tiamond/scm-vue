@@ -25,7 +25,7 @@
                 <el-menu-item @click="sysout" index="">退出系统</el-menu-item>
               </el-collapse-item>
               <el-collapse-item title="采购管理" name="2">
-                <el-menu-item @click="toSupplier" index="/purchase/supplier">供应商管理</el-menu-item>
+                <el-menu-item index="/purchase/supplier">供应商管理</el-menu-item>
                 <el-menu-item index="/purchase/add-purchase-note">新添采购单</el-menu-item>
                 <el-menu-item index="/purchase/done-purchase-note">采购单了结</el-menu-item>
                 <el-menu-item index="2-4">采购单查询</el-menu-item>
@@ -71,6 +71,7 @@
             <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
             <el-breadcrumb-item :to="{ path: `/${part}/${tit}` }">{{ part | partFilter }}</el-breadcrumb-item>
             <el-breadcrumb-item :to="{ path: `/${part}/${tit}` }">{{ tit | titFilter }}</el-breadcrumb-item>
+            <el-breadcrumb-item :to="{ path: `/${part}/${tit}/${thid}` }">{{ thid | thidFilter }}</el-breadcrumb-item>
           </el-breadcrumb>
           <router-view></router-view>
         </el-main>
@@ -105,7 +106,8 @@ export default {
       userList: [],
       logoutDialogVisible: false,
       part: '',
-      tit: ''
+      tit: '',
+      thid: ''
     }
   },
   filters: {
@@ -139,6 +141,13 @@ export default {
         return '产品分类管理'
       } else if (val == 'product-manage') {
         return '产品管理'
+      } else if (val == 'done-purchase-note') {
+        return '采购单了结'
+      }
+    },
+    thidFilter (val) {
+      if (val == 'add-note') {
+        return '采购单明细'
       }
     }
   },
@@ -154,7 +163,6 @@ export default {
       this.nowTime = new Date()
     },
     showUserList () {
-      this.pathList = ['首页', '用户管理']
       this.$store.dispatch({
         type: 'getUserList'
       }).then(
@@ -183,10 +191,6 @@ export default {
       location.href = 'about:blank'
       window.close()
     },
-    // 供应商管理
-    toSupplier () {
-      this.pathList = ['首页', '供应商管理']
-    }
   },
   computed: {
     ...mapState(['loginUser', 'loginTime'])
@@ -199,6 +203,7 @@ export default {
       handler () {
         this.part = this.$route.path.split('/')[1]
         this.tit = this.$route.path.split('/')[2]
+        this.thid = this.$route.path.split('/')[3]
         console.log(this.part, this.tit);
         
       },
