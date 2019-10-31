@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-loading="divLoading">
     <!-- 添加明细 与 保存 -->
     <el-form :inline="true" class="demo-form-inline add-btn" size="mini">
       <el-form-item>
@@ -78,7 +78,7 @@
       </el-table-column>
       <el-table-column label="产品编号">
         <template slot-scope="scope">
-          <el-input placeholder="请输入内容" v-model="scope.row.productCode" class="input-with-select" disabled>
+          <el-input placeholder="选择" v-model="scope.row.productCode" class="input-with-select" disabled>
             <el-button slot="append" icon="el-icon-edit-outline" @click="choseProCate(scope.$index)">
             </el-button>
           </el-input>
@@ -86,7 +86,7 @@
       </el-table-column>
       <el-table-column label="产品名称">
         <template slot-scope="scope">
-          <el-input v-model="scope.row.name" placeholder="" disabled></el-input>
+          <el-input v-model="scope.row.productName" placeholder="" disabled></el-input>
         </template>
       </el-table-column>
       <el-table-column label="产品单价">
@@ -106,7 +106,7 @@
       </el-table-column>
       <el-table-column label="明细总价">
         <template slot-scope="scope">
-          <el-input :value="scope.row.num * scope.row.unitPrice" placeholder=""></el-input>
+          <el-input :value="scope.row.num * scope.row.unitPrice" placeholder="" disabled></el-input>
         </template>
       </el-table-column>
       <el-table-column
@@ -153,7 +153,7 @@
           </template>
         </el-table-column>
         <el-table-column
-          prop="name"
+          prop="productName"
           label="名称"
           width="120">
         </el-table-column>
@@ -179,10 +179,11 @@
 import axios from 'axios'
 import qs from 'querystring'
 import cookie from 'js-cookie'
+import {mapState} from 'vuex'
 export default {
   data () {
     return {
-      purchaseForm: {
+      /* purchaseForm: {
         poId: '',
         venderCode: '',
         account: '',
@@ -202,8 +203,8 @@ export default {
           //   unitName: '',
           //   itemPrice: ''
           // }
-        ],
-      },
+        ], 
+      },*/
       acount: 1,
       ProAcount: 1,
       supplierCateList: [],
@@ -213,14 +214,16 @@ export default {
       radio: '',
       poitemsIndex: '',
       dialogProCateVisible: false,
+      divLoading: true,
     }
   },
   created () {
     this.getProCaseList()
     this.getProductList()
-    this.purchaseForm.poId = new Date().getTime()
-    this.purchaseForm.account = cookie.get('account')
-    this.purchaseForm.createTime = this.setNowTime()
+    this.divLoading = false
+  },
+  computed: {
+    ...mapState(['purchaseForm', 'noteIsUpdOrDel'])
   },
   methods: {
     // 添加明细
@@ -235,17 +238,7 @@ export default {
         }
       )
     },
-    // 当前时间
-    setNowTime() {
-      let date = new Date()
-      let y = date.getFullYear()
-      let m = date.getMonth()+1
-      let d = date.getDate()
-      let h = date.getHours()
-      let mm = date.getMinutes()
-      let s = date.getSeconds()
-      return `${y}-${m < 10 ? '0'+m : m}-${d < 10 ? '0'+d : d} ${h < 10 ? '0'+h : h}:${mm < 10 ? '0'+mm : mm}:${s < 10 ? '0'+s : s}`
-    },
+   
     // 获取商品分类
     getProductList (page = 1, categoryId) {
       axios({
@@ -267,7 +260,7 @@ export default {
           }
           if (result.list.length != 0) {
             let arr = result.list.reduce((prev, cur) => {
-              prev.push({productCode: cur.productCode,name: cur.name, unitName: cur.unitName})
+              prev.push({productCode: cur.productCode,productName: cur.name, unitName: cur.unitName})
               return prev
             }, [])
             this.ProList = this.ProList.concat(arr)
@@ -320,7 +313,7 @@ export default {
     comfirmChose () {
       const seleted = this.ProList[this.radio]
       this.purchaseForm.poitems[this.poitemsIndex].productCode = seleted.productCode
-      this.purchaseForm.poitems[this.poitemsIndex].name = seleted.name
+      this.purchaseForm.poitems[this.poitemsIndex].productName = seleted.productName
       this.purchaseForm.poitems[this.poitemsIndex].unitName = seleted.unitName
       this.dialogProCateVisible = false
     },
@@ -355,12 +348,13 @@ export default {
     },
     // 提交采购单
     onSubmit () {
+      this.divLoading = true
       this.purchaseForm.poTotal = this.purchaseForm.productTotal + this.purchaseForm.tipFee
       console.log(this.purchaseForm)
       if (this.purchaseForm.poitems.length) {
         axios({
           method: 'POST',
-          url: '/api/main/purchase/pomain/add',
+          url: `/api/main/purchase/pomain/${this.noteIsUpdOrDel}`,
           headers: {'Content-Type': 'application/json'},
           data: JSON.stringify(this.purchaseForm)
         }).then(
@@ -368,11 +362,16 @@ export default {
             const result = resp.data
             console.log(result)
             if (result.code === 2) {
+              this.divLoading = false
               this.centerDialogVisible = true
               this.titMsg = result.message+'3秒后自动返回'
               setTimeout(() => {
                 this.$router.push('/purchase/add-purchase-note')
               }, 3000);
+            } else {
+              this.divLoading = false
+              this.centerDialogVisible = true
+              this.titMsg = result.message
             }
           }
         )

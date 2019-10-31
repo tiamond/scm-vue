@@ -28,10 +28,10 @@
                 <el-menu-item index="/purchase/supplier">供应商管理</el-menu-item>
                 <el-menu-item index="/purchase/add-purchase-note">新添采购单</el-menu-item>
                 <el-menu-item index="/purchase/done-purchase-note">采购单了结</el-menu-item>
-                <el-menu-item index="2-4">采购单查询</el-menu-item>
+                <el-menu-item index="/purchase/purchase-query">采购单查询</el-menu-item>
               </el-collapse-item>
               <el-collapse-item title="仓库管理" name="3">
-                <el-menu-item index="3-1">入库登记</el-menu-item>
+                <el-menu-item index="/stock/in-stock">入库登记</el-menu-item>
                 <el-menu-item index="3-2">出库登记</el-menu-item>
                 <el-menu-item index="3-3">库存查询</el-menu-item>
                 <el-menu-item index="3-4">库存盘点</el-menu-item>
@@ -143,6 +143,10 @@ export default {
         return '产品管理'
       } else if (val == 'done-purchase-note') {
         return '采购单了结'
+      } else if (val == 'purchase-query') {
+        return '采购单查询'
+      } else if (val == 'in-stock') {
+        return '入库登记'
       }
     },
     thidFilter (val) {

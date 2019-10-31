@@ -11,12 +11,18 @@ export default new Vuex.Store({
     loginUser: Cookie.get('account'),
     token: Cookie.get('token'),
     loginTime: Cookie.get('loginTime'),
-    userList: []
+    userList: [],
+    purchaseForm: {},
+    noteIsUpdOrDel: ''
   },
   mutations: {
     setUserList (state, payload) {
       state.userList = payload.userList
-    }
+    },
+    setUpdPoitemInfo (state, payload) {
+      state.purchaseForm = payload.data
+      state.noteIsUpdOrDel = payload.url
+    },
   },
   actions: {
     login ({commit}, payload) {

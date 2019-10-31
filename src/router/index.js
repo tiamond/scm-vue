@@ -62,6 +62,20 @@ const routes = [
         meta: {
           login_require: true 
         }
+      }, {
+        path: '/purchase/purchase-query',
+        name: 'PurchaseQuery',
+        component: () => import('@/views/components/purchase/PurchaseQuery'),
+        meta: {
+          login_require: true 
+        }
+      }, {
+        path: '/stock/in-stock',
+        name: 'InStock',
+        component: () => import('@/views/components/stockManage/InStock'),
+        meta: {
+          login_require: true 
+        }
       }
     ]
   }, {
