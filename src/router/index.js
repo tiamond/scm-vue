@@ -44,14 +44,35 @@ const routes = [
       }, {
         path: '/sell-manage/product-category-manage',
         name: 'ProductCategoryManage',
-        component: () => import('@/views/components/ProductCategoryManage'),
+        component: () => import('@/views/components/sell/ProductCategoryManage'),
         meta: {
           login_require: true 
         }
       }, {
         path: '/sell-manage/product-manage',
         name: 'ProductManage',
-        component: () => import('@/views/components/ProductManage'),
+        component: () => import('@/views/components/sell/ProductManage'),
+        meta: {
+          login_require: true 
+        }
+      }, {
+        path: '/sell-manage/customer',
+        name: 'Customer',
+        component: () => import('@/views/components/sell/Customer'),
+        meta: {
+          login_require: true 
+        }
+      }, {
+        path: '/sell-manage/add-somain',
+        name: 'AddSomain',
+        component: () => import('@/views/components/sell/AddSomain'),
+        meta: {
+          login_require: true 
+        }
+      }, {
+        path: '/sell-manage/add-somain/add-somain-note',
+        name: 'AddSomainNote',
+        component: () => import('@/views/components/sell/templates/AddSomainNote'),
         meta: {
           login_require: true 
         }
@@ -73,6 +94,20 @@ const routes = [
         path: '/stock/in-stock',
         name: 'InStock',
         component: () => import('@/views/components/stockManage/InStock'),
+        meta: {
+          login_require: true 
+        }
+      }, {
+        path: '/stock/out-stock',
+        name: 'OutStock',
+        component: () => import('@/views/components/stockManage/OutStock'),
+        meta: {
+          login_require: true 
+        }
+      }, {
+        path: '/finance/pay',
+        name: 'Pay',
+        component: () => import('@/views/components/finance/Pay'),
         meta: {
           login_require: true 
         }

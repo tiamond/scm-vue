@@ -32,20 +32,20 @@
               </el-collapse-item>
               <el-collapse-item title="仓库管理" name="3">
                 <el-menu-item index="/stock/in-stock">入库登记</el-menu-item>
-                <el-menu-item index="3-2">出库登记</el-menu-item>
+                <el-menu-item index="/stock/out-stock">出库登记</el-menu-item>
                 <el-menu-item index="3-3">库存查询</el-menu-item>
                 <el-menu-item index="3-4">库存盘点</el-menu-item>
               </el-collapse-item>
               <el-collapse-item title="财务收支" name="4">
-                <el-menu-item index="4-1">收款登记</el-menu-item>
-                <el-menu-item index="4-2">付款登记</el-menu-item>
+                <el-menu-item index="">收款登记</el-menu-item>
+                <el-menu-item index="/finance/pay">付款登记</el-menu-item>
                 <el-menu-item index="4-3">收支查询</el-menu-item>
               </el-collapse-item>
               <el-collapse-item title="销售管理" name="5">
                 <el-menu-item index="/sell-manage/product-category-manage">产品分类管理</el-menu-item>
                 <el-menu-item index="/sell-manage/product-manage">产品管理</el-menu-item>
-                <el-menu-item index="5-3">客户管理</el-menu-item>
-                <el-menu-item index="5-4">新添销售单</el-menu-item>
+                <el-menu-item index="/sell-manage/customer">客户管理</el-menu-item>
+                <el-menu-item index="/sell-manage/add-somain">新添销售单</el-menu-item>
                 <el-menu-item index="5-5">销售单了结</el-menu-item>
                 <el-menu-item index="5-6">销售单查询</el-menu-item>
               </el-collapse-item>
@@ -128,6 +128,8 @@ export default {
         return '系统管理'
       } else if (val = 'sell-manage') {
         return '销售管理'
+      } else if (val == 'finance') {
+        return '财务收支'
       }
     },
     titFilter (val) {
@@ -147,11 +149,21 @@ export default {
         return '采购单查询'
       } else if (val == 'in-stock') {
         return '入库登记'
+      } else if (val == 'out-stock') {
+        return '出库登记'
+      } else if (val == 'pay') {
+        return '支付登记'
+      } else if (val == 'customer') {
+        return '客户管理'
+      } else if (val == 'add-somain') {
+        return '新添销售单'
       }
     },
     thidFilter (val) {
       if (val == 'add-note') {
         return '采购单明细'
+      } else if (val == 'add-somain-note') {
+        return '添加销售单明细'
       }
     }
   },
@@ -209,7 +221,15 @@ export default {
         this.tit = this.$route.path.split('/')[2]
         this.thid = this.$route.path.split('/')[3]
         console.log(this.part, this.tit);
-        
+        if (this.part == 'purchase') {
+          this.activeName = '2'
+        } else if (this.part == 'sys-manage') {
+          this.activeName = '1'
+        } else if (this.part = 'sell-manage') {
+          this.activeName = '3'
+        } else if (this.part == 'finance') {
+          this.activeName = '4'
+        }
       },
       immediate: true
     }

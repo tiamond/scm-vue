@@ -16,8 +16,8 @@ axios.interceptors.response.use(function (response) {
     let result = response.data;
     if(result.code===1){
         // console.log(window.location)
-        // alert(result.message)
-        // window.location = window.location.origin + '/#/login'
+        alert(result.message)
+        window.location = window.location.origin + '/#/sys-manage/login'
     }
     return response;
     

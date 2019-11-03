@@ -11,8 +11,8 @@
           :total="tableTotal"
           :baseUrl="url"
           :titMsg="titMsg"
-          :queryURL="queryURL"
-          :isPurchase="isPurchase"/>
+          :isPurchase="isPurchase"
+          :queryURL="queryURL"/>
       </el-tab-pane>
       <el-tab-pane label="款到发货" name="2">
         <ProductTable 
@@ -23,8 +23,8 @@
           :total="tableTotal"
           :baseUrl="url"
           :titMsg="titMsg"
-          :queryURL="queryURL"
-          :isPurchase="isPurchase"/>
+          :isPurchase="isPurchase"
+          :queryURL="queryURL"/>
       </el-tab-pane>
       <el-tab-pane label="预付款到发货" name="3">
         <ProductTable 
@@ -35,8 +35,8 @@
           :total="tableTotal"
           :baseUrl="url"
           :titMsg="titMsg"
-          :queryURL="queryURL"
-          :isPurchase="isPurchase"/>
+          :isPurchase="isPurchase"
+          :queryURL="queryURL"/>
       </el-tab-pane>
     </el-tabs>
   </div>
@@ -54,10 +54,10 @@ export default {
       loading: true,
       tableTotal: 0,
       name: 1,
-      url: '/api/main/stock/instock',
-      titMsg: '入库',
-      queryURL: '/api/main/purchase/pomain/queryItem',
-      isPurchase: true
+      url: '/api/main/finance/pay',
+      titMsg: '付款',
+      isPurchase: true,
+      queryURL: '/api/main/purchase/pomain/queryItem'
     }
   },
   created () {
@@ -70,8 +70,8 @@ export default {
       this.queryPoitem(name);
       this.name = name
     },
-    // 获取采购订单y
-    queryPoitem (payType, type = 2, page = 1) {
+    // 获取采购订单
+    queryPoitem (payType, page = 1, type = 3) {
       this.loading = true
       axios({
         method: 'GET',

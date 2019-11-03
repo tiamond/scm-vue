@@ -2,18 +2,45 @@
   <el-tabs v-model="activeName" type="border-card" @tab-click="handleClick">
     <el-tab-pane name="1">
       <span slot="label"><i class="el-icon-date"></i>货到付款</span>
-      <ProductTable @getList="queryPoitem" :payType="name" :tableData="poitemList" :loading="loading" :total="tableTotal"/>
+      <ProductTable 
+        @getList="queryPoitem" 
+        :payType="name" 
+        :tableData="poitemList" 
+        :loading="loading" 
+        :total="tableTotal"
+        :baseUrl="url"
+        :titMsg="titMsg"
+        :queryURL="queryURL"
+        :isPurchase="isPurchase"/>
     </el-tab-pane>
     <el-tab-pane label="款到发货" name="2">
-      <ProductTable @getList="queryPoitem" :payType="name" :tableData="poitemList" :loading="loading" :total="tableTotal"/>
+      <ProductTable 
+        @getList="queryPoitem" 
+        :payType="name" 
+        :tableData="poitemList" 
+        :loading="loading" 
+        :total="tableTotal"
+        :baseUrl="url"
+        :titMsg="titMsg"
+        :queryURL="queryURL"
+        :isPurchase="isPurchase"/>
     </el-tab-pane>
     <el-tab-pane label="预付款到发货" name="3">
-      <ProductTable @getList="queryPoitem" :payType="name" :tableData="poitemList" :loading="loading" :total="tableTotal"/>
+      <ProductTable 
+        @getList="queryPoitem" 
+        :payType="name" 
+        :tableData="poitemList" 
+        :loading="loading" 
+        :total="tableTotal"
+        :baseUrl="url"
+        :titMsg="titMsg"
+        :queryURL="queryURL"
+        :isPurchase="isPurchase"/>
     </el-tab-pane>
   </el-tabs>
 </template>
 <script>
-import ProductTable from '@/views/components/purchase/templates/ProductTable'
+import ProductTable from '@/components/ProductTable'
 import axios from 'axios'
 import qs from 'querystring'
 export default {
@@ -23,7 +50,11 @@ export default {
       poitemList: [],
       loading: true,
       tableTotal: 0,
-      name: 1
+      name: 1,
+      url: '/api/main/purchase/pomain/end',
+      titMsg: '了结',
+      queryURL: '/api/main/purchase/pomain/queryItem',
+      isPurchase: true
     }
   },
   created () {
@@ -45,7 +76,7 @@ export default {
         params: {
           payType,
           page,
-          type: 1  // 当前测试，入库做完改成4
+          type: 4
         }
       }).then(
         resp => {

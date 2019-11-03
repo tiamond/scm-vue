@@ -13,6 +13,7 @@ export default new Vuex.Store({
     loginTime: Cookie.get('loginTime'),
     userList: [],
     purchaseForm: {},
+    somainForm: {},
     noteIsUpdOrDel: ''
   },
   mutations: {
@@ -23,6 +24,10 @@ export default new Vuex.Store({
       state.purchaseForm = payload.data
       state.noteIsUpdOrDel = payload.url
     },
+    setUpdSomainInfo (state, payload) {
+      state.somainForm = payload.data
+      state.noteIsUpdOrDel = payload.url
+    }
   },
   actions: {
     login ({commit}, payload) {

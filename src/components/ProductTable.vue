@@ -35,7 +35,7 @@
         width="100">
         <template slot-scope="scope">
           <el-button @click="showPoitem(scope.row)" type="text" size="small">查看</el-button>
-          <el-button @click="endPoitem(scope.row)" type="text" size="small">了结</el-button>
+          <el-button @click="endPoitem(scope.row)" type="text" size="small">{{titMsg}}</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -72,6 +72,7 @@
 
 <script>
 import axios from 'axios'
+import qs from 'querystring'
 export default {
   name: 'ProductTable',
   methods: {
@@ -81,7 +82,7 @@ export default {
   },
   data() {
     return {
-      tableColumns: [
+      purchaseTableColumns: [
         {prop: 'poId', lebal: '采购单编号', width: '130'},
         {prop: 'createTime', lebal: '创建时间', width: '140'},
         {prop: 'venderName', lebal: '供应商名称', width: '90'},
@@ -91,6 +92,17 @@ export default {
         {prop: 'poTotal', lebal: '采购单总价格', width: '95'},
         {prop: 'prePayFee', lebal: '最低预付款金额', width: '105'},
       ],
+      sellTableColumns: [
+        {prop: 'soId', lebal: '销售单编号', width: '130'},
+        {prop: 'createTime', lebal: '创建时间', width: '140'},
+        {prop: 'customerName', lebal: '客户名称', width: '90'},
+        {prop: 'account', lebal: '创建用户', width: '90'},
+        {prop: 'tipFee', lebal: '附加费用', width: '90'},
+        {prop: 'productTotal', lebal: '销售产品总价', width: '95'},
+        {prop: 'soTotal', lebal: '销售单总价格', width: '95'},
+        {prop: 'prePayFee', lebal: '最低预付款金额', width: '105'},
+      ],
+      tableColumns: [],
       gridData: [],
       dialogTableVisible: false,
       noteDetailList: [],
@@ -103,29 +115,48 @@ export default {
       ],
       dialogNoteDetailVisible: false,
       detailLoading: true,
-      page: 1
+      page: 1,
+      id: ''
     }
   },
-  props: ['tableData', 'loading', 'total', 'payType'],
+  mounted () {
+    if (this.isPurchase) {
+      this.tableColumns = this.purchaseTableColumns
+      this.id = 'poId'
+    } else {
+      this.tableColumns = this.sellTableColumns
+      this.id = 'soId'
+    }
+  },
+  props: ['tableData', 'loading', 'total', 'payType', 'baseUrl', 'titMsg', 'queryURL', 'isPurchase'],
   methods: {
     // 展示采购单细节
-    showPoitem ({poId}) {
+    showPoitem (data) {
+      const pid = data[this.id]
       this.detailLoading = true
-      console.log(poId)
       this.dialogNoteDetailVisible = true
-      this.sendAxios('queryItem', poId).then(({data}) => {
+      axios({
+        method: 'GET',
+        url: this.queryURL,
+        params: {
+          poId: pid,
+          soId: pid,
+        }
+      }).then(({data}) => {
         this.noteDetailList = data
         this.detailLoading = false
       })
     },
     // 了结订单
-    endPoitem ({poId}) {
-      this.$confirm('此操作将了结该订单，并从类表中删除, 是否继续?', '提示', {
+    endPoitem (data) {
+      const pid = data[this.id]
+      const financeType = this.payType == 3 ? 2 : 1
+      this.$confirm(`此操作${this.titMsg}订单， 是否继续?`, '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        this.sendAxios('end', poId).then(({data}) => {
+        this.sendAxios(this.baseUrl, pid, this.payType, financeType).then(({data}) => {
           console.log(data)
           if (data.code === 2) {
             this.$message({
@@ -143,21 +174,25 @@ export default {
       }).catch(() => {
         this.$message({
           type: 'info',
-          message: '已取消删除'
+          message: `已取消${this.titMsg}`
         })       
       })
     },
     // 发送请求
-    sendAxios (url, poId) {
+    sendAxios (url, pid, paytype, type) {
       return new Promise((resolve, reject) => {
         axios({
-          method: 'GET',
-          url: `api/main/purchase/pomain/${url}`,
-          params: {
-            poId,
-          }
+          method: 'POST',
+          url,
+          data: qs.stringify({
+            poId: pid,
+            soId: pid,
+            paytype,
+            type
+          })
         }).then(resp => {
           resolve(resp)
+          console.log(resp)
         }).catch(err => {
           reject(err)
         })

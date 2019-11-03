@@ -10,63 +10,59 @@
       </el-form-item>
     </el-form>
 
-    <!-- 采购订单 -->
-    <el-form :inline="true" :model="purchaseForm" class="demo-form-inline pomianForm" size="mini">
-      <el-form-item label="采购单编号" label-width="120px">
-        <el-input v-model="purchaseForm.poId" placeholder="采购单编号" disabled></el-input>
+    <!-- 销售订单 -->
+    <el-form :inline="true" :model="somainForm" class="demo-form-inline pomianForm" size="mini">
+      <el-form-item label="销售单编号" label-width="120px">
+        <el-input v-model="somainForm.soId" placeholder="销售单编号" disabled></el-input>
       </el-form-item>
       <el-form-item label="创建用户" label-width="120px">
-        <el-input v-model="purchaseForm.account" placeholder="创建用户" disabled></el-input>
+        <el-input v-model="somainForm.account" placeholder="创建用户" disabled></el-input>
       </el-form-item>
       <el-form-item label="创建时间" label-width="120px">
-        <el-input v-model="purchaseForm.createTime" placeholder="创建时间" disabled></el-input>
+        <el-input v-model="somainForm.createTime" placeholder="创建时间" disabled></el-input>
       </el-form-item>
-      <el-form-item label="产品总价" label-width="120px">
-        <el-input v-model="purchaseForm.productTotal" placeholder="自动生成" disabled></el-input>
+      <el-form-item label="采购产品总价" label-width="120px">
+        <el-input v-model="somainForm.productTotal" placeholder="自动生成" disabled></el-input>
       </el-form-item>
       <el-form-item label="附加费用" label-width="120px">
-        <el-input v-model="purchaseForm.tipFee" placeholder="附加费用"></el-input>
+        <el-input v-model="somainForm.tipFee" placeholder="附加费用"></el-input>
       </el-form-item>
       <el-form-item label="采购总价" label-width="120px" >
-        <el-input :value="Number(purchaseForm.productTotal) + Number(purchaseForm.tipFee)" disabled placeholder="自动生成"></el-input>
+        <el-input :value="Number(somainForm.productTotal) + Number(somainForm.tipFee)" disabled placeholder="自动生成"></el-input>
       </el-form-item>
-      <el-form-item label="供应商编号" label-width="120px">
-        <el-select v-model="purchaseForm.venderCode" placeholder="请选择供应商">
-          <el-option 
-            v-for="(item, index) in supplierCateList"
-            :key="index"
-            :label="item.name" 
-            :value="item.venderCode">
-          </el-option>
-        </el-select>
+      <!-- 需要弹框 -->
+      <el-form-item label="客户编号" label-width="120px">
+        <el-input class="cusIpt" placeholder="请点击选择" v-model="somainForm.customerCode" disabled>
+          <template slot="append"><i class="el-icon-edit-outline" @click="chooseCustommer"></i></template>
+        </el-input>
       </el-form-item>
-      <el-form-item label="付款方式" label-width="105px">
-        <el-select v-model="purchaseForm.payType" placeholder="请选择付款方式">
-          <el-option label="货到付款" value="1"></el-option>
-          <el-option label="款到发货" value="2"></el-option>
-          <el-option label="预付款到发货" value="3"></el-option>
+      <el-form-item label="付款方式" label-width="120px">
+        <el-select v-model="somainForm.payType" placeholder="请选择付款方式">
+          <el-option label="货到付款" :value="1"></el-option>
+          <el-option label="款到发货" :value="2"></el-option>
+          <el-option label="预付款到发货" :value="3"></el-option>
         </el-select>
       </el-form-item>
       <el-form-item label="采购单状态" label-width="105px">
-        <el-select v-model="purchaseForm.status" placeholder="请选择采购单状态">
-          <el-option label="新增" value="1"></el-option>
-          <el-option label="已发货" value="2"></el-option>
-          <el-option label="已付款" value="3"></el-option>
-          <el-option label="已了结" value="4"></el-option>
-          <el-option label="已预付" value="5"></el-option>
+        <el-select v-model="somainForm.status" placeholder="请选择采购单状态">
+          <el-option label="新增" :value="1"></el-option>
+          <el-option label="已发货" :value="2"></el-option>
+          <el-option label="已付款" :value="3"></el-option>
+          <el-option label="已了结" :value="4"></el-option>
+          <el-option label="已预付" :value="5"></el-option>
         </el-select>
       </el-form-item>
       <el-form-item label="最低预付款金额" label-width="120px">
-        <el-input v-model="purchaseForm.prePayFee" placeholder="最低预付款金额"></el-input>
+        <el-input v-model="somainForm.prePayFee" placeholder="最低预付款金额"></el-input>
       </el-form-item>
       <el-form-item label="备注" label-width="120px">
-        <el-input v-model="purchaseForm.remark" placeholder="备注"></el-input>
+        <el-input v-model="somainForm.remark" placeholder="备注"></el-input>
       </el-form-item>
     </el-form>
 
     <!-- 明细表格 -->
     <el-table
-      :data="purchaseForm.poitems"
+      :data="somainForm.soitems"
       style="width: 93%"
       size="mini"
       border
@@ -153,7 +149,7 @@
           </template>
         </el-table-column>
         <el-table-column
-          prop="productName"
+          prop="name"
           label="名称"
           width="120">
         </el-table-column>
@@ -162,14 +158,62 @@
           label="计量单位">
         </el-table-column>
       </el-table>
-      <el-form :inline="true" class="demo-form-inline" size="mini">
+      <el-pagination
+        background
+        layout="prev, pager, next"
+        @current-change="proPageChange"
+        :total="proPageTotal">
+      </el-pagination>
+      <el-form :inline="true" class="demo-form-inline customer-confirm" size="mini">
         <el-form-item>
           <el-button type="primary" @click="comfirmChose">确定</el-button>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="dialogProCateVisible=false">取消</el-button>
+          <el-button type="info" @click="dialogProCateVisible=false">取消</el-button>
         </el-form-item>
       </el-form>
+    </el-dialog>
+
+    <!-- 选择客户 -->
+    <el-dialog title="客户选择" :visible.sync="dialogChooseCustomerVisible">
+      <el-table
+        :data="customerList"
+        height="250"
+        border
+        size="mini"
+        style="width: 100%">
+        <el-table-column
+          label="客户编号"
+          width="100">
+          <template slot-scope="scope">
+            <el-radio v-model="radio" :label="scope.$index">{{scope.row.customerCode}}</el-radio>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="name"
+          label="名称"
+          width="120">
+        </el-table-column>
+        <el-table-column
+          prop="contactor"
+          label="联系人">
+        </el-table-column>
+      </el-table>
+      <el-pagination
+        background
+        layout="prev, pager, next"
+        @current-change="CustomerPageChange"
+        :total="customerTotal">
+      </el-pagination>
+      <el-form :inline="true" class="demo-form-inline customer-confirm" size="mini">
+        <el-form-item>
+          <el-button type="info" @click="dialogChooseCustomerVisible=false;somainForm.customerCode=''">取消</el-button>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="comfirmCustomerChose">确定</el-button>
+        </el-form-item>
+      </el-form>
+      
     </el-dialog>
 
   </div>
@@ -183,31 +227,10 @@ import {mapState} from 'vuex'
 export default {
   data () {
     return {
-      /* purchaseForm: {
-        poId: '',
-        venderCode: '',
-        account: '',
-        createTime: '',
-        tipFee: 0,
-        productTotal: '',
-        poTotal: '',
-        payType: '',
-        prePayFee: 0,
-        status: '',
-        remark: '',
-        poitems: [
-          // {
-          //   productCode: '',
-          //   unitPrice: '',
-          //   num: '',
-          //   unitName: '',
-          //   itemPrice: ''
-          // }
-        ], 
-      },*/
+      proPageTotal: '',
       acount: 1,
       ProAcount: 1,
-      supplierCateList: [],
+      customerList: [],
       ProList: [],
       centerDialogVisible: false,
       titMsg: '',
@@ -215,107 +238,67 @@ export default {
       poitemsIndex: '',
       dialogProCateVisible: false,
       divLoading: true,
+      dialogChooseCustomerVisible: false,
+      customerTotal: 0
     }
   },
   created () {
-    this.getProCaseList()
-    this.getProductList()
+    this.getCustomerList()
+    this.getProList()
     this.divLoading = false
+    console.log(this.somainForm);
   },
   computed: {
-    ...mapState(['purchaseForm', 'noteIsUpdOrDel'])
+    ...mapState(['somainForm', 'noteIsUpdOrDel'])
   },
   methods: {
     // 添加明细
     addDetail () {
-      this.purchaseForm.poitems.push(
+      this.somainForm.soitems.push(
         {
           productCode: '',
-          num: '',
+          num: 1,
           unitName: '',
           unitPrice: '',
           itemPrice: ''
         }
       )
     },
-   
-    // 获取商品分类
-    getProductList (page = 1, categoryId) {
+    // 选择销售对象客户
+    chooseCustommer () {
+      this.dialogChooseCustomerVisible = true
+    },
+    // 获取对象列表
+    getCustomerList (page = 1) {
       axios({
         method: 'GET',
-        url: '/api/main/sell/product/show',
+        url: '/api/main/sell/customer/show',
         params: {
           page,
-          categoryId
         }
-      }).then(
-        resp => {
-          const result = resp.data
-          if (result.code == 1) {
-            this.centerDialogVisible = true
-            this.titMsg = result.message+'， 3秒后跳转登录页面'
-            setTimeout(() => {
-              this.$router.push('/sys-manage/login')
-            }, 3000);
-          }
-          if (result.list.length != 0) {
-            let arr = result.list.reduce((prev, cur) => {
-              prev.push({productCode: cur.productCode,productName: cur.name, unitName: cur.unitName})
-              return prev
-            }, [])
-            this.ProList = this.ProList.concat(arr)
-          } 
-          if (result.list.length == 10) {
-            this.ProAcount++
-            this.getProCaseList(this.ProAcount)
-          }
-        }
-      )
-    },
-    // 获取供应商列表
-    getProCaseList (page = 1) {
-      axios({
-        method: 'GET',
-        url: '/api/main/purchase/vender/show',
-        params: {
-          page
-        }
-      }).then(
-        resp => {
-          const result = resp.data
-          if (result.code == 1) {
-            this.centerDialogVisible = true
-            this.titMsg = result.message+'， 3秒后跳转登录页面'
-            setTimeout(() => {
-              this.$router.push('/sys-manage/login')
-            }, 3000);
-          }
-          if (result.list.length != 0) {
-            let arr = result.list.reduce((prev, cur) => {
-              prev.push({venderCode: cur.venderCode,name: cur.name})
-              return prev
-            }, [])
-            this.supplierCateList = this.supplierCateList.concat(arr)
-          }
-          if (result.list.length == 10) {
-            this.acount++
-            this.getProCaseList(this.acount)
-          }
-        }
-      )
+      }).then(({data}) => {
+        this.customerList = data.list
+        this.customerTotal = data.total
+      })
     },
     // 选择商品分类
     choseProCate (index) {
       this.dialogProCateVisible = true
       this.poitemsIndex = index
     },
-    // 确认选择
+    // 确认产品选择
     comfirmChose () {
       const seleted = this.ProList[this.radio]
-      this.purchaseForm.poitems[this.poitemsIndex].productCode = seleted.productCode
-      this.purchaseForm.poitems[this.poitemsIndex].productName = seleted.productName
-      this.purchaseForm.poitems[this.poitemsIndex].unitName = seleted.unitName
+      this.somainForm.soitems[this.poitemsIndex].productCode = seleted.productCode
+      this.somainForm.soitems[this.poitemsIndex].productName = seleted.name
+      this.somainForm.soitems[this.poitemsIndex].unitName = seleted.unitName
       this.dialogProCateVisible = false
+    },
+    // 确认客户选择
+    comfirmCustomerChose () {
+      const seleted = this.customerList[this.radio]
+      this.somainForm.customerCode = seleted.customerCode
+      this.dialogChooseCustomerVisible = false
     },
     // 删除一条明细
     deleteOne (index) {
@@ -324,7 +307,7 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        this.purchaseForm.poitems.splice(index, 1)
+        this.somainForm.soitems.splice(index, 1)
         this.$message({
           type: 'success',
           message: '删除成功'
@@ -338,25 +321,25 @@ export default {
     },
     // 获得产品总价
     getProTotal () {
-      this.purchaseForm.poitems.map(item => {
+      this.somainForm.soitems.map(item => {
         item.itemPrice = item.num * item.unitPrice
       })
-      this.purchaseForm.productTotal = this.purchaseForm.poitems.reduce((prev, cur) => {
+      this.somainForm.productTotal = this.somainForm.soitems.reduce((prev, cur) => {
         prev += cur.itemPrice
         return prev
       }, 0)
     },
-    // 提交采购单
+    // 提交销售单
     onSubmit () {
       this.divLoading = true
-      this.purchaseForm.poTotal = this.purchaseForm.productTotal + this.purchaseForm.tipFee
-      console.log(this.purchaseForm)
-      if (this.purchaseForm.poitems.length) {
+      this.somainForm.soTotal = this.somainForm.productTotal + this.somainForm.tipFee
+      console.log(this.somainForm)
+      if (this.somainForm.soitems.length) {
         axios({
           method: 'POST',
-          url: `/api/main/purchase/pomain/${this.noteIsUpdOrDel}`,
+          url: `/api/main/sell/somain/${this.noteIsUpdOrDel}`,
           headers: {'Content-Type': 'application/json'},
-          data: JSON.stringify(this.purchaseForm)
+          data: JSON.stringify(this.somainForm)
         }).then(
           resp => {
             const result = resp.data
@@ -366,7 +349,7 @@ export default {
               this.centerDialogVisible = true
               this.titMsg = result.message+'3秒后自动返回'
               setTimeout(() => {
-                this.$router.push('/purchase/add-purchase-note')
+                this.$router.push('/sell-manage/add-somain')
               }, 3000);
             } else {
               this.divLoading = false
@@ -380,6 +363,28 @@ export default {
         this.titMsg = '采购明细不能为空！'
       }
     },
+    // 选择客户时候的分页
+    CustomerPageChange (page) {
+      this.getCustomerList(page)
+    },
+    // 获取商品列表
+    getProList (page = 1) {
+      axios({
+        method: 'GET',
+        url: '/api/main/sell/product/show',
+        params: {
+          page,
+        }
+      }).then(({data}) => {
+        console.log(data)
+        this.ProList = data.list
+        this.proPageTotal = data.total
+      })
+    },
+    // 选择产品时的分页
+    proPageChange (page) {
+      this.getProList(page)
+    }
   },
 }
 </script>
@@ -399,4 +404,8 @@ i
   box-shadow 0px 0px 5px 1px #ccc
 .el-table
   margin 10px
+.cusIpt
+  width 180px
+.customer-confirm
+  text-align right
 </style>
