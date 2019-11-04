@@ -70,7 +70,26 @@ export default {
           page, 
         }
       }).then(({data}) => {
+        console.log(data.details.list)
         this.tableData = data.details.list
+        this.tableData.map(item => {
+          if (item.payType == 1 && item.status == 2) {
+            item.obligation = item.poTotal
+          } else if (item.payType == 2 && item.status == 1) {
+            item.obligation = item.poTotal
+          } else if (item.payType == 3 && item.status == 1) {
+            item.obligation = item.prePayFee
+          } else if (item.payType == 3 && item.status == 2) {
+            item.obligation = item.poTotal - item.prePayFee
+          } else {
+            item.obligation = 0
+          }
+          if (item.payType == 3 && item.status == 1) {
+            item.lessPrePay = item.prePayFee
+          } else {
+            item.lessPrePay = 0
+          }
+        })
         this.form = data
         this.tableTotal = data.details.total
         this.tableLoading = false

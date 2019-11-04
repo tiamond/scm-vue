@@ -1,5 +1,6 @@
 <template>
   <div>
+    <!-- 添加用户 -->
     <el-button 
       class="addUser"
       type="primary" 
@@ -7,6 +8,8 @@
       size="small">
       创建用户
     </el-button>
+
+    <!-- 用户列表 -->
     <el-table
       :data="userList"
       style="width: 95%"
@@ -62,7 +65,7 @@
             修改
           </el-button>
           <el-button
-            @click.native.prevent="deleteUser(scope.$index, userList)"
+            @click.native.prevent="deleteUser(scope.row)"
             type="danger"
             size="mini">
             移除
@@ -70,6 +73,7 @@
         </template>
       </el-table-column>
     </el-table>
+
     <!-- 修改与添加框 -->
     <el-dialog :title="dialogMsg" :visible.sync="dialogFormVisible">
       <el-form size="mini" :model="user" :inline="true" class="demo-form-inline">
@@ -107,6 +111,7 @@
         <el-button type="primary" @click="updateUser">确 定</el-button>
       </div>
     </el-dialog>
+
     <!-- 提示框 -->
     <el-dialog
       title="提示"
@@ -118,7 +123,7 @@
         <el-button type="primary" @click="centerDialogVisible = false">确 定</el-button>
       </span>
     </el-dialog>
-    
+
     <!-- 分页 -->
     <el-pagination
       background
@@ -149,7 +154,7 @@ export default {
         name: '',
         passWord: '',
         createDate: '',
-        status: -1,
+        status: 0,
         modelcodes: []
       },
       page: 1
@@ -216,14 +221,25 @@ export default {
       this.updateURL = 'api/main/system/user/update'
     },
     updateUser () {
-      this.loading = true
-      this.dialogFormVisible = false
-      axios({
-        url: this.updateURL,
-        method: 'POST',
-        data: qs.stringify(this.user)
-      }).then(
-        resp => {
+      if (this.user.account == '' || this.user.name == '') {
+        this.centerDialogVisible = true
+        this.titMsg = '用户名和名字不能为空'
+      } else if (this.user.modelcodes.length == 0) {
+        this.centerDialogVisible = true
+        this.titMsg = '用户权限不能为空'
+      } else {
+        if (this.user.passWord == '') {
+          this.user.passWord = this.user.account
+          this.centerDialogVisible = true
+          this.titMsg = '您的密码没有填写，默认与用户名一致'
+        }
+        this.loading = true
+        this.dialogFormVisible = false
+        axios({
+          url: this.updateURL,
+          method: 'POST',
+          data: qs.stringify(this.user)
+        }).then(resp => {
           const result = resp.data
           if (result.code === 2) {
             this.centerDialogVisible = true
@@ -244,40 +260,48 @@ export default {
             this.titMsg = result.message
           }
           
-        }
-      )
-    },
-    deleteUser (index, data) {
-      this.loading = true
-      const account = data[index].account
-      axios({
-        method: 'POST',
-        url: 'api/main/system/user/delete',
-        data: qs.stringify({
-          account,
         })
-      }).then(
-        resp => {
+      }
+    },
+    deleteUser ({account}) {
+      this.$confirm('此操作将永久删除该用户, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.loading = true
+        axios({
+          method: 'POST',
+          url: 'api/main/system/user/delete',
+          data: qs.stringify({
+            account,
+          })
+        }).then(resp => {
           const result = resp.data
           if (result.code === 2) {
-            this.centerDialogVisible = true
-            this.titMsg = result.message
+            this.$message({
+              type: 'success',
+              message: result.message
+            })
             this.$store.dispatch({
               type: 'getUserList'
-            }).then(
-              data => {
-                this.loading = false
-              }
-            )
+            }).then(data => {
+              this.loading = false
+            })
           } else {
             this.loading = false
-            this.centerDialogVisible = true
-            this.titMsg = result.message
+            this.$message({
+              type: 'info',
+              message: result.message
+            })
           }
-        }
-      ).catch(
-        err => console.log(err)
-      )
+        }).catch(err => console.log(err))
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '取消删除'
+        })
+      })
     },
     prevAddUser () {
       this.dialogMsg = '创建新用户'

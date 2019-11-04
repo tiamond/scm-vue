@@ -18,30 +18,50 @@
             router
           >
             <el-collapse v-model="activeName" accordion>
-              <span class="tit">SCM管理系统</span>
-              <el-collapse-item title="系统管理" name="1">
+              <span class="tit">管理系统</span>
+              <el-collapse-item name="1">
+                <template slot="title">
+                  <i class="el-icon-monitor"></i>
+                  <span>系统管理</span>
+                </template>
                 <el-menu-item @click="showUserList" index="/sys-manage/user-management">用户管理</el-menu-item>
                 <el-menu-item @click="logout" index="/sys-manage/login">重新登录</el-menu-item>
                 <el-menu-item @click="sysout" index="">退出系统</el-menu-item>
               </el-collapse-item>
-              <el-collapse-item title="采购管理" name="2">
+              <el-collapse-item name="2">
+                <template slot="title">
+                  <i class="el-icon-s-claim"></i>
+                  <span>采购管理</span>
+                </template>
                 <el-menu-item index="/purchase/supplier">供应商管理</el-menu-item>
                 <el-menu-item index="/purchase/add-purchase-note">新添采购单</el-menu-item>
                 <el-menu-item index="/purchase/done-purchase-note">采购单了结</el-menu-item>
                 <el-menu-item index="/purchase/purchase-query">采购单查询</el-menu-item>
               </el-collapse-item>
-              <el-collapse-item title="仓库管理" name="3">
+              <el-collapse-item name="3">\
+                <template slot="title">
+                  <i class="el-icon-office-building"></i>
+                  <span>仓库管理</span>
+                </template>
                 <el-menu-item index="/stock/in-stock">入库登记</el-menu-item>
                 <el-menu-item index="/stock/out-stock">出库登记</el-menu-item>
                 <el-menu-item index="/stock/stock-query">库存查询</el-menu-item>
                 <el-menu-item index="/stock/check-stock">库存盘点</el-menu-item>
               </el-collapse-item>
-              <el-collapse-item title="财务收支" name="4">
+              <el-collapse-item name="4">
+                <template slot="title">
+                  <i class="el-icon-s-check"></i>
+                  <span>财务收支</span>
+                </template>
                 <el-menu-item index="/finance/receipt">收款登记</el-menu-item>
                 <el-menu-item index="/finance/pay">付款登记</el-menu-item>
                 <el-menu-item index="/finance/finance-query">收支查询</el-menu-item>
               </el-collapse-item>
-              <el-collapse-item title="销售管理" name="5">
+              <el-collapse-item name="5">
+                <template slot="title">
+                  <i class="el-icon-s-order"></i>
+                  <span>销售管理</span>
+                </template>
                 <el-menu-item index="/sell-manage/product-category-manage">产品分类管理</el-menu-item>
                 <el-menu-item index="/sell-manage/product-manage">产品管理</el-menu-item>
                 <el-menu-item index="/sell-manage/customer">客户管理</el-menu-item>
@@ -49,7 +69,11 @@
                 <el-menu-item index="/sell-manage/somain-end">销售单了结</el-menu-item>
                 <el-menu-item index="/sell-manage/somain-query">销售单查询</el-menu-item>
               </el-collapse-item>
-              <el-collapse-item title="业务表报" name="6">
+              <el-collapse-item name="6">
+                <template slot="title">
+                  <i class="el-icon-s-marketing"></i>
+                  <span>业务表报</span>
+                </template>
                 <el-menu-item index="/report/pomain-report">月度采购报表</el-menu-item>
                 <el-menu-item index="/report/payment-report">月度收支登记表</el-menu-item>
                 <el-menu-item index="/report/instock-report">月度入库报表</el-menu-item>
@@ -57,11 +81,11 @@
                 <el-menu-item index="/report/stock-report">月度库存报表</el-menu-item>
                 <el-menu-item index="/report/somain-report">月度销售报表</el-menu-item>
               </el-collapse-item>
-              <el-collapse-item title="网上销售" name="7">
+              <!-- <el-collapse-item title="网上销售" name="7">
                 <el-menu-item index="7-1">客户注册</el-menu-item>
                 <el-menu-item index="7-2">商品展示</el-menu-item>
                 <el-menu-item index="7-3">网上下单</el-menu-item>
-              </el-collapse-item>
+              </el-collapse-item> -->
             </el-collapse>
           </el-menu>
         </el-aside>

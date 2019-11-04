@@ -15,6 +15,19 @@
       销售总金额: <span>{{form.sototal | currency}}</span>元;
       已付款金额: <span>{{form.totalpay | currency}}</span>元;
     </p>
+    <el-table border stripe>
+      <el-table-column label="销售单数">
+        <template>
+          {{form.totalnum}}
+        </template>
+      </el-table-column>
+      <el-table-column label="已了结单数">
+        <template>
+          {{form.endtotalnum}}
+        </template>
+      </el-table-column>
+    </el-table>
+    
     <ReportTable
       :tableData="tableData"
       :total="tableTotal"
@@ -67,6 +80,24 @@ export default {
       }).then(({data}) => {
         console.log(data)
         this.tableData = data.details.list
+        this.tableData.map(item => {
+          if (item.payType == 1 && item.status == 2) {
+            item.obligation = item.soTotal
+          } else if (item.payType == 2 && item.status == 1) {
+            item.obligation = item.soTotal
+          } else if (item.payType == 3 && item.status == 1) {
+            item.obligation = item.prePayFee
+          } else if (item.payType == 3 && item.status == 5) {
+            item.obligation = item.soTotal - item.prePayFee
+          } else {
+            item.obligation = 0
+          }
+          if (item.payType == 3 && item.status == 1) {
+            item.lessPrePay = item.prePayFee
+          } else {
+            item.lessPrePay = 0
+          }
+        })
         this.form = data
         this.tableTotal = data.details.total
         this.tableLoading = false
