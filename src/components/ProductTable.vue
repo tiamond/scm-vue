@@ -150,7 +150,7 @@ export default {
     // 了结订单
     endPoitem (data) {
       const pid = data[this.id]
-      const financeType = this.payType == 3 ? 2 : 1
+      const financeType = (this.payType == 3 && data.status == 1) ? 2 : 1
       this.$confirm(`此操作${this.titMsg}订单， 是否继续?`, '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',

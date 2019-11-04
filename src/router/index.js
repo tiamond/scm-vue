@@ -77,6 +77,20 @@ const routes = [
           login_require: true 
         }
       }, {
+        path: '/sell-manage/somain-end',
+        name: 'SomainEnd',
+        component: () => import('@/views/components/sell/SomainEnd'),
+        meta: {
+          login_require: true 
+        }
+      }, {
+        path: '/sell-manage/somain-query',
+        name: 'SomainQuery',
+        component: () => import('@/views/components/sell/SomainQuery'),
+        meta: {
+          login_require: true 
+        }
+      }, {
         path: '/purchase/add-purchase-note/add-note',
         name: 'AddNote',
         component: () => import('@/views/components/purchase/templates/AddNote'),
@@ -105,9 +119,79 @@ const routes = [
           login_require: true 
         }
       }, {
+        path: '/stock/stock-query',
+        name: 'StockQuery',
+        component: () => import('@/views/components/stockManage/StockQuery'),
+        meta: {
+          login_require: true 
+        }
+      }, {
+        path: '/stock/check-stock',
+        name: 'CheckStock',
+        component: () => import('@/views/components/stockManage/CheckStock'),
+        meta: {
+          login_require: true 
+        }
+      }, {
         path: '/finance/pay',
         name: 'Pay',
         component: () => import('@/views/components/finance/Pay'),
+        meta: {
+          login_require: true 
+        }
+      }, {
+        path: '/finance/receipt',
+        name: 'Receipt',
+        component: () => import('@/views/components/finance/Receipt'),
+        meta: {
+          login_require: true 
+        }
+      }, {
+        path: '/finance/finance-query',
+        name: 'FinanceQuery',
+        component: () => import('@/views/components/finance/FinanceQuery'),
+        meta: {
+          login_require: true 
+        }
+      }, {
+        path: '/report/pomain-report',
+        name: 'PomainReport',
+        component: () => import('@/views/components/report/PomainReport'),
+        meta: {
+          login_require: true 
+        }
+      }, {
+        path: '/report/payment-report',
+        name: 'PaymentReport',
+        component: () => import('@/views/components/report/PaymentReport'),
+        meta: {
+          login_require: true 
+        }
+      }, {
+        path: '/report/instock-report',
+        name: 'InstockReport',
+        component: () => import('@/views/components/report/InstockReport'),
+        meta: {
+          login_require: true 
+        }
+      }, {
+        path: '/report/outstock-report',
+        name: 'OutstockReport',
+        component: () => import('@/views/components/report/OutstockReport'),
+        meta: {
+          login_require: true 
+        }
+      }, {
+        path: '/report/stock-report',
+        name: 'StockReport',
+        component: () => import('@/views/components/report/StockReport'),
+        meta: {
+          login_require: true 
+        }
+      }, {
+        path: '/report/somain-report',
+        name: 'SomainReport',
+        component: () => import('@/views/components/report/SomainReport'),
         meta: {
           login_require: true 
         }

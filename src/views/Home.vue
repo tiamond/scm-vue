@@ -10,8 +10,8 @@
 
       <el-container>
         <el-aside width="200px">
+            <!-- default-active="1-1" -->
           <el-menu
-            default-active="1-1"
             class="el-menu-vertical-demo"
             @open="handleOpen"
             @close="handleClose"
@@ -33,29 +33,29 @@
               <el-collapse-item title="仓库管理" name="3">
                 <el-menu-item index="/stock/in-stock">入库登记</el-menu-item>
                 <el-menu-item index="/stock/out-stock">出库登记</el-menu-item>
-                <el-menu-item index="3-3">库存查询</el-menu-item>
-                <el-menu-item index="3-4">库存盘点</el-menu-item>
+                <el-menu-item index="/stock/stock-query">库存查询</el-menu-item>
+                <el-menu-item index="/stock/check-stock">库存盘点</el-menu-item>
               </el-collapse-item>
               <el-collapse-item title="财务收支" name="4">
-                <el-menu-item index="">收款登记</el-menu-item>
+                <el-menu-item index="/finance/receipt">收款登记</el-menu-item>
                 <el-menu-item index="/finance/pay">付款登记</el-menu-item>
-                <el-menu-item index="4-3">收支查询</el-menu-item>
+                <el-menu-item index="/finance/finance-query">收支查询</el-menu-item>
               </el-collapse-item>
               <el-collapse-item title="销售管理" name="5">
                 <el-menu-item index="/sell-manage/product-category-manage">产品分类管理</el-menu-item>
                 <el-menu-item index="/sell-manage/product-manage">产品管理</el-menu-item>
                 <el-menu-item index="/sell-manage/customer">客户管理</el-menu-item>
                 <el-menu-item index="/sell-manage/add-somain">新添销售单</el-menu-item>
-                <el-menu-item index="5-5">销售单了结</el-menu-item>
-                <el-menu-item index="5-6">销售单查询</el-menu-item>
+                <el-menu-item index="/sell-manage/somain-end">销售单了结</el-menu-item>
+                <el-menu-item index="/sell-manage/somain-query">销售单查询</el-menu-item>
               </el-collapse-item>
               <el-collapse-item title="业务表报" name="6">
-                <el-menu-item index="6-1">月度采购报表</el-menu-item>
-                <el-menu-item index="6-2">月度收支登记表</el-menu-item>
-                <el-menu-item index="6-3">月度入库报表</el-menu-item>
-                <el-menu-item index="6-4">月度出库报表</el-menu-item>
-                <el-menu-item index="6-5">月度库存报表</el-menu-item>
-                <el-menu-item index="6-6">月度销售报表</el-menu-item>
+                <el-menu-item index="/report/pomain-report">月度采购报表</el-menu-item>
+                <el-menu-item index="/report/payment-report">月度收支登记表</el-menu-item>
+                <el-menu-item index="/report/instock-report">月度入库报表</el-menu-item>
+                <el-menu-item index="/report/outstock-report">月度出库报表</el-menu-item>
+                <el-menu-item index="/report/stock-report">月度库存报表</el-menu-item>
+                <el-menu-item index="/report/somain-report">月度销售报表</el-menu-item>
               </el-collapse-item>
               <el-collapse-item title="网上销售" name="7">
                 <el-menu-item index="7-1">客户注册</el-menu-item>
@@ -71,7 +71,7 @@
             <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
             <el-breadcrumb-item :to="{ path: `/${part}/${tit}` }">{{ part | partFilter }}</el-breadcrumb-item>
             <el-breadcrumb-item :to="{ path: `/${part}/${tit}` }">{{ tit | titFilter }}</el-breadcrumb-item>
-            <el-breadcrumb-item :to="{ path: `/${part}/${tit}/${thid}` }">{{ thid | thidFilter }}</el-breadcrumb-item>
+            <el-breadcrumb-item v-if="thid" :to="{ path: `/${part}/${tit}/${thid}` }">{{ thid | thidFilter }}</el-breadcrumb-item>
           </el-breadcrumb>
           <router-view></router-view>
         </el-main>
@@ -126,10 +126,14 @@ export default {
         return '采购管理'
       } else if (val == 'sys-manage') {
         return '系统管理'
-      } else if (val = 'sell-manage') {
+      } else if (val == 'sell-manage') {
         return '销售管理'
       } else if (val == 'finance') {
         return '财务收支'
+      } else if (val == 'stock') {
+        return '仓库管理'
+      } else if (val == 'report') {
+        return '业务报表'
       }
     },
     titFilter (val) {
@@ -157,6 +161,26 @@ export default {
         return '客户管理'
       } else if (val == 'add-somain') {
         return '新添销售单'
+      } else if (val == 'receipt') {
+        return '收款登记'
+      } else if (val =='stock-query') {
+        return '库存查询'
+      } else if (val == 'check-stock') {
+        return '库存盘点'
+      } else if (val == 'finance-query') {
+        return '收支查询'
+      } else if (val == 'somain-query') {
+        return '销售单查询'
+      } else if (val == 'payment-report') {
+        return '月度收支登记'
+      } else if (val == 'instock-report') {
+        return '月度入库报表'
+      } else if (val == 'outstock-report') {
+        return '月度出库报表'
+      } else if (val == 'stock-report') {
+        return '月度库存报表'
+      } else if (val == 'somain-report') {
+        return '月度销售报表'
       }
     },
     thidFilter (val) {
@@ -221,14 +245,18 @@ export default {
         this.tit = this.$route.path.split('/')[2]
         this.thid = this.$route.path.split('/')[3]
         console.log(this.part, this.tit);
-        if (this.part == 'purchase') {
-          this.activeName = '2'
-        } else if (this.part == 'sys-manage') {
+        if (this.part == 'sys-manage') {
           this.activeName = '1'
-        } else if (this.part = 'sell-manage') {
+        } else if (this.part == 'purchase') {
+          this.activeName = '2'
+        } else if (this.part == 'stock') {
           this.activeName = '3'
         } else if (this.part == 'finance') {
           this.activeName = '4'
+        } else if (this.part == 'sell-manage') {
+          this.activeName = '5'
+        } else if (this.part == 'report') {
+          this.activeName = '6'
         }
       },
       immediate: true
