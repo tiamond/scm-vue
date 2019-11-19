@@ -34,14 +34,21 @@
         :width="col.width">
       </el-table-column>
       <el-table-column
+        label="付款方式">
+        <template slot-scope="scope">
+          {{scope.row.payType == 1 ? '货到付款' : (scope.row.payType == 1 ? '款到发货' : '预付款到发货')}}
+        </template>
+      </el-table-column>
+      
+      <el-table-column
         fixed="right"
         label="操作"
-        width="220"
+        width="200"
         class="cmondBtn">
         <template slot-scope="scope">
           <el-button
             @click.native.prevent="showNote(scope.$index, puraseList)"
-            type="info"
+            type="text"
             size="mini">
             查看
           </el-button>
@@ -108,13 +115,12 @@ export default {
       PurchaseColumns: [
         { id: 'poId', label: '采购单编号', width: 115 },
         { id: 'createTime', label: '创建时间', width: 135 },
-        { id: 'venderName', label: '供应商名称', width: 90 },
-        { id: 'account', label: '创建用户', width: 85 },
-        { id: 'tipFee', label: '附加费用', width: 85 },
-        { id: 'productTotal', label: '采购产品总价', width: 100 },
-        { id: 'poTotal', label: '采购单总价格', width: 120 },
-        { id: 'payType', label: '付款方式', width: 80 },
-        { id: 'prePayFee', label: '最低预付款金额', width: 110 }
+        { id: 'venderName', label: '供应商名称', width: 85 },
+        { id: 'account', label: '创建用户', width: 70 },
+        { id: 'tipFee', label: '附加费用', width: 70 },
+        { id: 'productTotal', label: '产品总价', width: 70 },
+        { id: 'poTotal', label: '采购单总价格', width: 110 },
+        { id: 'prePayFee', label: '最低预付金额', width: 110 }
       ],
       dialogNoteDetailVisible:  false,
       noteDetailList: [],
@@ -154,16 +160,16 @@ export default {
         poTotal: '',
         payType: '',
         prePayFee: 0,
-        status: '',
+        status: 1,
         remark: '',
         poitems: [
-          // {
-          //   productCode: '',
-          //   unitPrice: '',
-          //   num: '',
-          //   unitName: '',
-          //   itemPrice: ''
-          // }
+          {
+            productCode: '',
+            unitPrice: '',
+            num: '',
+            unitName: '',
+            itemPrice: ''
+          }
         ], 
       }
       data.poId = new Date().getTime()
@@ -270,7 +276,6 @@ export default {
             data,
             url: 'update'
           })
-          // this.loading = false
           this.$router.push('/purchase/add-purchase-note/add-note')
         }
       )

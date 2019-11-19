@@ -161,13 +161,13 @@ export default {
         soTotal: '',
         payType: '',
         prePayFee: 0,
-        status: '',
+        status: 1,
         remark: '',
         soitems: [
           {
             productCode: '',
             unitPrice: '',
-            num: 1,
+            num: '',
             unitName: '',
             itemPrice: ''
           }

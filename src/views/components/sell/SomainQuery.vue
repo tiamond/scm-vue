@@ -7,7 +7,7 @@
         <el-input v-model="queryForm.soId" placeholder="销售单编号"></el-input>
       </el-form-item>
       <el-form-item label="客户编号" class="iptvender">
-        <el-input placeholder="选择" v-model="queryForm.customerCode" class="input-with-select" disabled>
+        <el-input placeholder="选择" v-model="queryForm.customerCode" class="input-with-select" readonly>
           <el-button slot="append" icon="el-icon-edit-outline" @click="choseSupplier"></el-button>
         </el-input>
       </el-form-item>
@@ -129,63 +129,63 @@
 
     <!-- 查看销售单弹框 -->
     <el-dialog class="poItem-dialog" title="订单细节" :visible.sync="dialogNoteDetailVisible" v-loading="detailLoading">
-      <el-form :inline="true" :model="somainForm" class="demo-form-inline" size="mini" disabled>
+      <el-form :inline="true" :model="somainForm" class="demo-form-inline" size="mini" readonly>
         <p>销售单主信息</p>
         <el-form-item label="销售单编号" label-width="120px">
-          <el-input v-model="somainForm.soId" placeholder="销售单编号" disabled></el-input>
+          <el-input v-model="somainForm.soId" placeholder="销售单编号" readonly></el-input>
         </el-form-item>
         <el-form-item label="创建用户" label-width="120px">
-          <el-input v-model="somainForm.account" placeholder="创建用户" disabled></el-input>
+          <el-input v-model="somainForm.account" placeholder="创建用户" readonly></el-input>
         </el-form-item>
         <el-form-item label="创建时间" label-width="120px">
-          <el-input v-model="somainForm.createTime" placeholder="创建时间" disabled></el-input>
+          <el-input v-model="somainForm.createTime" placeholder="创建时间" readonly></el-input>
         </el-form-item>
         <el-form-item label="产品总价" label-width="120px">
-          <el-input v-model="somainForm.productTotal" placeholder="自动生成" disabled></el-input>
+          <el-input v-model="somainForm.productTotal" placeholder="自动生成" readonly></el-input>
         </el-form-item>
         <el-form-item label="附加费用" label-width="120px">
-          <el-input v-model="somainForm.tipFee" placeholder="附加费用"></el-input>
+          <el-input v-model="somainForm.tipFee" placeholder="附加费用" readonly></el-input>
         </el-form-item>
         <el-form-item label="销售总价" label-width="120px" >
-          <el-input :value="Number(somainForm.productTotal) + Number(somainForm.tipFee)" disabled placeholder="自动生成"></el-input>
+          <el-input readonly :value="Number(somainForm.productTotal) + Number(somainForm.tipFee)" readonly placeholder="自动生成"></el-input>
         </el-form-item>
         <el-form-item label="客户名称" label-width="120px">
-          <el-input v-model="somainForm.venderName" placeholder="请选择客户"></el-input>
+          <el-input v-model="somainForm.customerName" placeholder="请选择客户" readonly></el-input>
         </el-form-item>
         <el-form-item label="付款方式" label-width="105px">
-          <el-input :value="somainForm.payType == 1 ? '货到付款' : (somainForm.payType == 2 ? '款到发货' : '预付款到发货')" placeholder="请选择付款方式"></el-input>
+          <el-input readonly :value="somainForm.payType == 1 ? '货到付款' : (somainForm.payType == 2 ? '款到发货' : '预付款到发货')" placeholder="请选择付款方式"></el-input>
         </el-form-item>
         <el-form-item label="销售单状态" label-width="105px">
-          <el-input :value="somainForm.status == 1 ? '新增' : (somainForm.status == 2 ? '已收货' : (somainForm.status == 3 ? '已付款' : somainForm.status == 4 ? '已了结' : '已预付'))" placeholder="请选择销售单状态"></el-input>
+          <el-input readonly :value="somainForm.status == 1 ? '新增' : (somainForm.status == 2 ? '已收货' : (somainForm.status == 3 ? '已付款' : somainForm.status == 4 ? '已了结' : '已预付'))" placeholder="请选择销售单状态"></el-input>
         </el-form-item>
         <el-form-item label="最低预付款金额" label-width="120px">
-          <el-input v-model="somainForm.prePayFee" placeholder="最低预付款金额"></el-input>
+          <el-input v-model="somainForm.prePayFee" placeholder="最低预付款金额" readonly></el-input>
         </el-form-item>
         <el-form-item label="备注" label-width="120px">
-          <el-input v-model="somainForm.remark" placeholder="备注"></el-input>
+          <el-input v-model="somainForm.remark" placeholder="备注" readonly></el-input>
         </el-form-item>
         <p>销售单入库信息</p><hr>
         <el-form-item label="入库时间" label-width="120px">
-          <el-input v-model="somainForm.stockTime" placeholder="未入库" disabled></el-input>
+          <el-input v-model="somainForm.stockTime" placeholder="未入库" readonly></el-input>
         </el-form-item>
         <el-form-item label="入库操作用户" label-width="120px">
-          <el-input v-model="somainForm.stockUser" placeholder="未入库" disabled></el-input>
+          <el-input v-model="somainForm.stockUser" placeholder="未入库" readonly></el-input>
         </el-form-item>
         <div v-if="somainForm.payType == 3">
           <p>销售单预付信息</p><hr>
           <el-form-item label="预付时间" label-width="120px">
-            <el-input v-model="somainForm.prePayTime" placeholder="未入库" disabled></el-input>
+            <el-input v-model="somainForm.prePayTime" placeholder="未入库" readonly></el-input>
           </el-form-item>
           <el-form-item label="预付操作用户" label-width="120px">
-            <el-input v-model="somainForm.prePayUser" placeholder="未入库" disabled></el-input>
+            <el-input v-model="somainForm.prePayUser" placeholder="未入库" readonly></el-input>
           </el-form-item>
         </div>
         <p>销售单付款信息</p><hr>
         <el-form-item label="付款时间" label-width="120px">
-          <el-input v-model="somainForm.payTime" placeholder="未付款" disabled></el-input>
+          <el-input v-model="somainForm.payTime" placeholder="未付款" readonly></el-input>
         </el-form-item>
         <el-form-item label="付款操作用户" label-width="120px">
-          <el-input v-model="somainForm.payUser" placeholder="未付款" disabled></el-input>
+          <el-input v-model="somainForm.payUser" placeholder="未付款" readonly></el-input>
         </el-form-item>
       </el-form>
       <hr>
@@ -202,32 +202,32 @@
         </el-table-column>
         <el-table-column label="产品编号">
           <template slot-scope="scope">
-            <el-input placeholder="请输入内容" v-model="scope.row.productCode" disabled></el-input>
+            <el-input placeholder="请输入内容" v-model="scope.row.productCode" readonly></el-input>
           </template>
         </el-table-column>
         <el-table-column label="产品名称">
           <template slot-scope="scope">
-            <el-input v-model="scope.row.productName" placeholder="" disabled></el-input>
+            <el-input v-model="scope.row.productName" placeholder="" readonly></el-input>
           </template>
         </el-table-column>
         <el-table-column label="产品单价">
           <template slot-scope="scope">
-            <el-input v-model="scope.row.unitPrice" placeholder="" disabled></el-input>
+            <el-input v-model="scope.row.unitPrice" placeholder="" readonly></el-input>
           </template>
         </el-table-column>
         <el-table-column label="产品数量">
           <template slot-scope="scope">
-            <el-input v-model="scope.row.num" placeholder="" disabled></el-input>
+            <el-input v-model="scope.row.num" placeholder="" readonly></el-input>
           </template>
         </el-table-column>
         <el-table-column label="数量单位">
           <template slot-scope="scope">
-            <el-input v-model="scope.row.unitName" placeholder="" disabled></el-input>
+            <el-input v-model="scope.row.unitName" placeholder="" readonly></el-input>
           </template>
         </el-table-column>
         <el-table-column label="明细总价">
           <template slot-scope="scope">
-            <el-input :value="scope.row.itemPrice" placeholder="" disabled></el-input>
+            <el-input :value="scope.row.itemPrice" placeholder="" readonly></el-input>
           </template>
         </el-table-column>
       </el-table>

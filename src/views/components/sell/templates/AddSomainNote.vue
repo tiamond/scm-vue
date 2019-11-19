@@ -6,12 +6,17 @@
         <el-button type="primary" @click="addDetail"> <i class="el-icon-circle-plus"></i> 添加明细</el-button>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" @click="onSubmit"> <i class="el-icon-s-claim"></i> 保存</el-button>
+        <el-button type="primary" @click="onSubmit('soForm')"> <i class="el-icon-s-claim"></i> 保存</el-button>
       </el-form-item>
     </el-form>
 
     <!-- 销售订单 -->
-    <el-form :inline="true" :model="somainForm" class="demo-form-inline pomianForm" size="mini">
+    <el-form 
+      :rules="checkCustomer"
+      :inline="true" 
+      :model="somainForm" 
+      class="demo-form-inline pomianForm" 
+      size="mini" ref="soForm">
       <el-form-item label="销售单编号" label-width="120px">
         <el-input v-model="somainForm.soId" placeholder="销售单编号" disabled></el-input>
       </el-form-item>
@@ -24,19 +29,19 @@
       <el-form-item label="采购产品总价" label-width="120px">
         <el-input v-model="somainForm.productTotal" placeholder="自动生成" disabled></el-input>
       </el-form-item>
-      <el-form-item label="附加费用" label-width="120px">
-        <el-input v-model="somainForm.tipFee" placeholder="附加费用"></el-input>
+      <el-form-item label="附加费用" label-width="120px" prop="tipFee">
+        <el-input oninput="value = value.replace(/[^\d\.]/, '')" v-model="somainForm.tipFee" placeholder="附加费用"></el-input>
       </el-form-item>
       <el-form-item label="采购总价" label-width="120px" >
         <el-input :value="Number(somainForm.productTotal) + Number(somainForm.tipFee)" disabled placeholder="自动生成"></el-input>
       </el-form-item>
       <!-- 需要弹框 -->
-      <el-form-item label="客户编号" label-width="120px">
+      <el-form-item label="客户编号" label-width="120px" prop="customerCode">
         <el-input class="cusIpt" placeholder="请点击选择" v-model="somainForm.customerCode" disabled>
           <template slot="append"><i class="el-icon-edit-outline" @click="chooseCustommer"></i></template>
         </el-input>
       </el-form-item>
-      <el-form-item label="付款方式" label-width="120px">
+      <el-form-item label="付款方式" label-width="120px" prop="payType">
         <el-select v-model="somainForm.payType" placeholder="请选择付款方式">
           <el-option label="货到付款" :value="1"></el-option>
           <el-option label="款到发货" :value="2"></el-option>
@@ -44,7 +49,7 @@
         </el-select>
       </el-form-item>
       <el-form-item label="采购单状态" label-width="105px">
-        <el-select v-model="somainForm.status" placeholder="请选择采购单状态">
+        <el-select v-model="somainForm.status" placeholder="请选择采购单状态" disabled>
           <el-option label="新增" :value="1"></el-option>
           <el-option label="已发货" :value="2"></el-option>
           <el-option label="已付款" :value="3"></el-option>
@@ -52,11 +57,11 @@
           <el-option label="已预付" :value="5"></el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="最低预付款金额" label-width="120px">
-        <el-input v-model="somainForm.prePayFee" placeholder="最低预付款金额"></el-input>
-      </el-form-item>
       <el-form-item label="备注" label-width="120px">
         <el-input v-model="somainForm.remark" placeholder="备注"></el-input>
+      </el-form-item>
+      <el-form-item label="最低预付款金额" label-width="120px" v-if="somainForm.payType == 3" prop="prePayFee">
+        <el-input v-model="somainForm.prePayFee" placeholder="最低预付款金额"></el-input>
       </el-form-item>
     </el-form>
 
@@ -87,12 +92,12 @@
       </el-table-column>
       <el-table-column label="产品单价">
         <template slot-scope="scope">
-          <el-input v-model="scope.row.unitPrice" placeholder="" @change="getProTotal"></el-input>
+          <el-input oninput="value = value.replace(/[^\d\.]/, '')" v-model="scope.row.unitPrice" placeholder="" @change="getProTotal"></el-input>
         </template>
       </el-table-column>
       <el-table-column label="产品数量">
         <template slot-scope="scope">
-          <el-input v-model="scope.row.num" placeholder="" @change="getProTotal"></el-input>
+          <el-input oninput="value = value.replace(/[^\d]/, '')" v-model="scope.row.num" placeholder="" @change="getProTotal"></el-input>
         </template>
       </el-table-column>
       <el-table-column label="数量单位">
@@ -226,7 +231,31 @@ import cookie from 'js-cookie'
 import {mapState} from 'vuex'
 export default {
   data () {
+    const checkTipFee = (rule, value, callback) => {
+      if (value == '') {
+        this.somainForm.tipFee = 0
+        callback()
+      } else {
+        callback()
+      }
+    }
     return {
+      checkCustomer: {
+        tipFee: [
+          {pattern: /^[0-9]+(.[0-9]{1,2})?$/, message: '请输入正数，最多保留2位小数', trigger: 'blur'},
+          {validator: checkTipFee, trigger: 'blur'}
+        ],
+        prePayFee: [
+          {pattern: /^[0-9]+(.[0-9]{1,2})?$/, message: '请输入正数，最多保留2位小数', trigger: 'blur'},
+          {validator: checkTipFee, trigger: 'blur'}
+        ],
+        customerCode: [
+          {required: true, message: '请选择客户', trigger: 'change'}
+        ],
+        payType: [
+          {required: true, message: '请选择付款方式', trigger: 'change'}
+        ],
+      },
       proPageTotal: '',
       acount: 1,
       ProAcount: 1,
@@ -239,7 +268,7 @@ export default {
       dialogProCateVisible: false,
       divLoading: true,
       dialogChooseCustomerVisible: false,
-      customerTotal: 0
+      customerTotal: 0,
     }
   },
   created () {
@@ -308,6 +337,7 @@ export default {
         type: 'warning'
       }).then(() => {
         this.somainForm.soitems.splice(index, 1)
+        this.getProTotal()
         this.$message({
           type: 'success',
           message: '删除成功'
@@ -330,38 +360,43 @@ export default {
       }, 0)
     },
     // 提交销售单
-    onSubmit () {
-      this.divLoading = true
-      this.somainForm.soTotal = this.somainForm.productTotal + this.somainForm.tipFee
-      console.log(this.somainForm)
-      if (this.somainForm.soitems.length) {
-        axios({
-          method: 'POST',
-          url: `/api/main/sell/somain/${this.noteIsUpdOrDel}`,
-          headers: {'Content-Type': 'application/json'},
-          data: JSON.stringify(this.somainForm)
-        }).then(
-          resp => {
-            const result = resp.data
-            console.log(result)
-            if (result.code === 2) {
-              this.divLoading = false
-              this.centerDialogVisible = true
-              this.titMsg = result.message+'3秒后自动返回'
-              setTimeout(() => {
-                this.$router.push('/sell-manage/add-somain')
-              }, 3000);
-            } else {
-              this.divLoading = false
-              this.centerDialogVisible = true
-              this.titMsg = result.message
-            }
+    onSubmit (formName) {
+      this.$refs[formName].validate(valid => {
+        if (valid) {
+          if (this.somainForm.soitems.length && this.somainForm.soitems.every(item => item.productCode!=''&&item.num!=''&&item.unitPrice!='')) {
+            this.divLoading = true
+            this.somainForm.soTotal = this.somainForm.productTotal + this.somainForm.tipFee
+            axios({
+              method: 'POST',
+              url: `/api/main/sell/somain/${this.noteIsUpdOrDel}`,
+              headers: {'Content-Type': 'application/json'},
+              data: JSON.stringify(this.somainForm)
+            }).then(
+              resp => {
+                const result = resp.data
+                console.log(result)
+                if (result.code === 2) {
+                  this.divLoading = false
+                  this.centerDialogVisible = true
+                  this.titMsg = result.message+'3秒后自动返回'
+                  setTimeout(() => {
+                    this.$router.push('/sell-manage/add-somain')
+                  }, 3000);
+                } else {
+                  this.divLoading = false
+                  this.centerDialogVisible = true
+                  this.titMsg = result.message
+                }
+              }
+            )
+          } else {
+            this.centerDialogVisible = true
+            this.titMsg = '采购明细不能为空！'
           }
-        )
-      } else {
-        this.centerDialogVisible = true
-        this.titMsg = '采购明细不能为空！'
-      }
+        } else {
+          return false
+        }
+      })
     },
     // 选择客户时候的分页
     CustomerPageChange (page) {

@@ -60,7 +60,13 @@
 
     <!-- 添加和更改产品 -->
     <el-dialog :title="dialogMsg" :visible.sync="dialogFormVisible" class="add-supplier">
-      <el-form size="mini" :model="productForm" :rules="productRules" :inline="true" class="demo-form-inline">
+      <el-form 
+        ref="proForm" 
+        size="mini" 
+        :model="productForm" 
+        :rules="productRules" 
+        :inline="true" 
+        class="demo-form-inline">
         <el-form-item label="产品编号" label-width="95px" prop="productCode">
           <el-input v-model="productForm.productCode" autocomplete="off" :disabled="proIdISDis"></el-input>
         </el-form-item>
@@ -73,8 +79,8 @@
         <el-form-item label="分类编号" label-width="95px" prop="categoryId">
           <el-select v-model="productForm.categoryId" placeholder="请选择产品类型">
             <el-option
-              v-for="item in proCateList"
-              :key="item.categoryId"
+              v-for="(item, index) in proCateList"
+              :key="index"
               :label="item.name" 
               :value="item.categoryId">
             </el-option>
@@ -92,7 +98,7 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">取 消</el-button>
-        <el-button type="primary" @click="confirmDialogFrom">确 定</el-button>
+        <el-button type="primary" @click="update">确 定</el-button>
       </div>
     </el-dialog>
 
@@ -160,24 +166,26 @@ export default {
       creOrUpdMsg: '添加日期',
       productRules: {
         productCode: [
-          { required: true }
+          { required: true, message: '请输入产品编号', trrigger: 'blur' }
         ],
         name: [
-          { required: true }
+          { required: true, message: '请输入产品名称', trrigger: 'blur' }
         ],
         unitName: [
-          { required: true }
-        ],
-        categoryId: [
-          { required: true }
-        ],
-        price: [
-          { required: true }
-        ],
+          { required: true, message: '请输入计量单位', trrigger: 'blur' }
+        ]
       },
       proCateList: [],
       acount: 1,
       proIdISDis: false,
+    }
+  },
+  watch: {
+    dialogFormVisible: {
+      handler (val) {
+        val || this.$refs['proForm'].resetFields()
+        val || this.initProForm()
+      }
     }
   },
   created () {
@@ -248,9 +256,9 @@ export default {
     },
     // 添加产品
     addPoduct () {
-      console.log('添加产品')
-      this.initProForm()
       this.dialogFormVisible = true
+      this.initProForm()
+      // this.$refs['proForm'].resetFields()
       this.proIdISDis = false
       this.dialogMsg = '添加商品'
       this.isAddOrUpd = 'add'
@@ -259,22 +267,28 @@ export default {
       this.getProCaseList()
     },
     // 确认修改或添加
-    confirmDialogFrom () {
-      axios({
-        method: 'POST',
-        url: `api/main/sell/product/${this.isAddOrUpd}`,
-        data: qs.stringify(this.productForm)
-      }).then(
-        resp => {
-          const result = resp.data
-          this.dialogFormVisible = false
-          this.centerDialogVisible = true
-          this.titMsg = result.message
-          if (result.code == 2) {
-            this.getProList()
-          }
+    update () {
+      this.$refs['proForm'].validate(valid => {
+        if (valid) {
+          axios({
+            method: 'POST',
+            url: `api/main/sell/product/${this.isAddOrUpd}`,
+            data: qs.stringify(this.productForm)
+          }).then(
+            resp => {
+              const result = resp.data
+              this.dialogFormVisible = false
+              this.centerDialogVisible = true
+              this.titMsg = result.message
+              if (result.code == 2) {
+                this.getProList()
+              }
+            }
+          )
+        } else {
+          return false
         }
-      )
+      })
     },
     // 分页
     pageChange (page) {
@@ -320,7 +334,9 @@ export default {
     },
     // 修改一行
     updateOne (index, data) {
-      this.productForm = data[index]
+      this.getProCaseList()
+      const res = data[index]
+      this.productForm = {...res}
       this.dialogFormVisible = true
       this.dialogMsg = '修改商品'
       this.proIdISDis = true
@@ -331,7 +347,7 @@ export default {
       this.productForm.productCode = ''
       this.productForm.name = ''
       this.productForm.unitName = ''
-      // this.productForm.categoryId = ''
+      this.productForm.categoryId = ''
       this.productForm.price = ''
       this.productForm.createDate = ''
       this.productForm.remark = ''

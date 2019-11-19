@@ -60,14 +60,14 @@
 
     <!-- 添加或者修改供应商对话框 -->
     <el-dialog :title="dialogMsg" :visible.sync="dialogFormVisible" class="add-supplier">
-      <el-form size="mini" :model="supplierForm" :rules="supplierRules" :inline="true" class="demo-form-inline">
+      <el-form size="mini" :model="supplierForm" :rules="supplierRules" :inline="true" class="demo-form-inline" ref="form">
         <el-form-item label="供应商编号" label-width="95px" prop="venderCode">
           <el-input v-model="supplierForm.venderCode" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="供应商名称" label-width="95px" prop="name">
           <el-input v-model="supplierForm.name" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="密码" label-width="95px">
+        <el-form-item label="密码" label-width="95px" prop="passWord">
           <el-input v-model="supplierForm.passWord" autocomplete="off" type="password"></el-input>
         </el-form-item>
         <el-form-item label="联系人" label-width="95px" prop="contactor">
@@ -76,7 +76,7 @@
         <el-form-item label="地址" label-width="95px" prop="address">
           <el-input v-model="supplierForm.address" autocomplete="off" type="text"></el-input>
         </el-form-item>
-        <el-form-item label="邮政编码" label-width="95px">
+        <el-form-item label="邮政编码" label-width="95px" prop="postCode">
           <el-input v-model="supplierForm.postCode" autocomplete="off" type="text"></el-input>
         </el-form-item>
         <el-form-item :label="creOrUpdMsg" label-width="95px">
@@ -85,13 +85,13 @@
         <el-form-item label="电话" label-width="95px" prop="tel">
           <el-input v-model="supplierForm.tel" autocomplete="off" type="text"></el-input>
         </el-form-item>
-        <el-form-item label="传真" label-width="95px">
+        <el-form-item label="传真" label-width="95px" prop="fax">
           <el-input v-model="supplierForm.fax" autocomplete="off" type="text"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">取 消</el-button>
-        <el-button type="primary" @click="updateSupplier">确 定</el-button>
+        <el-button @click="cancel">取 消</el-button>
+        <el-button type="primary" @click="updateSupplier('form')">确 定</el-button>
       </div>
     </el-dialog>
 
@@ -170,8 +170,10 @@ export default {
         ],
         address: [
           { required: true }
-        ]
-
+        ],
+        passWord: [],
+        postCode: [],
+        fax: [],
       },
       dialogMsg: '添加供应商',
       dialogFormVisible: false,
@@ -272,27 +274,35 @@ export default {
       this.supplierForm = supplier
     },
     // 更新或者创建供应商
-    updateSupplier () {
-      if (this.supplierForm.passWord == '') {
-        this.supplierForm.passWord = this.supplierForm.venderCode
-      }
-      axios({
-        method: 'POST',
-        url: `/api/main/purchase/vender/${this.isAddOrUpd}`,
-        data: qs.stringify(this.supplierForm)
-      }).then(
-        resp => {
-          console.log(resp)
-          const result = resp.data
-          this.dialogFormVisible = false
-          this.centerDialogVisible = true
-          this.titMsg = result.message
-          if (result.code == 2) {
-            this.getSupplierList()
+    updateSupplier (formName) {
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          if (this.supplierForm.passWord == '') {
+            this.supplierForm.passWord = this.supplierForm.venderCode
           }
-          this.initform()
+          axios({
+            method: 'POST',
+            url: `/api/main/purchase/vender/${this.isAddOrUpd}`,
+            data: qs.stringify(this.supplierForm)
+          }).then(
+            resp => {
+              console.log(resp)
+              const result = resp.data
+              this.dialogFormVisible = false
+              this.centerDialogVisible = true
+              this.titMsg = result.message
+              if (result.code == 2) {
+                this.getSupplierList()
+              }
+              this.initform()
+            }
+          )
+        } else {
+          console.log('submit error');
+          return false
         }
-      )
+      })
+      
     },
     // 分页
     pageChange (page) {
@@ -309,7 +319,11 @@ export default {
       this.supplierForm.createDate= '',
       this.supplierForm.tel= '',
       this.supplierForm.fax= ''
-    }
+    },
+    cancel () {
+      this.dialogFormVisible = false; 
+      this.$refs.form.resetFields();
+    },
   },
   computed: {
     // 模糊查找当页供应商
@@ -321,6 +335,13 @@ export default {
           }
         })
         return res
+      }
+    }
+  },
+  watch: {
+    dialogFormVisible: {
+      handler (val) {
+        val || this.$refs['form'].resetFields()
       }
     }
   }

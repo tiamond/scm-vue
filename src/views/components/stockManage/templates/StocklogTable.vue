@@ -38,14 +38,12 @@ export default {
         {prop: 'orderCode', label: '相关采购单号'},
         {prop: 'createUser', label: '入库经手人'},
         {prop: 'stockNum', label: '入库数量'},
-        // {prop: '', label: '入库类型'},
       ],
       OutTableColumns: [
         {prop: 'stockTime', label: '出库时间'},
         {prop: 'orderCode', label: '相关采购单号'},
         {prop: 'createUser', label: '出库经手人'},
         {prop: 'stockNum', label: '出库数量'},
-        // {prop: '', label: '入库类型'},
       ],
       tableColumns: [],
     }

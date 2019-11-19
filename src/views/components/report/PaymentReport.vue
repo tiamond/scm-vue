@@ -27,6 +27,7 @@
         @getList="tableChangePage"
         :columnsType="'receiptColumns'"
         :loading="tableLoading"
+        :curPage="curPage"
       />
     </el-tab-pane>
     <el-tab-pane label="付款明细" name="pay">
@@ -36,6 +37,7 @@
         @getList="tableChangePage"
         :columnsType="'payColumns'"
         :loading="tableLoading"
+        :curPage="curPage"
       />
     </el-tab-pane>
   </el-tabs>
@@ -63,6 +65,7 @@ export default {
       form:{},
       tableTotal: 0,
       tableLoading: true,
+      curPage: 1,
     }
   },
   filters: {
@@ -96,10 +99,12 @@ export default {
     // 查询
     queryReport () {
       this.getList(this.value2)
+      this.curPage = 1
     },
     // 分页 
     tableChangePage (page) {
       console.log(page)
+      this.curPage = page
       this.getDetails(this.value2, page)
     },  
     // tab Toggle

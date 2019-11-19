@@ -25,6 +25,7 @@
     <el-pagination
       background
       layout="prev, pager, next"
+      :current-page="curPage"
       :total="total"
       @current-change="chagePage">
     </el-pagination>
@@ -96,7 +97,7 @@ export default {
       hasStatus: true
     }
   },
-  props: ['tableData', 'total', 'columnsType', 'loading'],
+  props: ['tableData', 'total', 'columnsType', 'loading', 'curPage'],
   mounted () {
     if (this.columnsType == 'pomainColumns') {
       this.tableColumns = this.pomainColumns

@@ -2,10 +2,9 @@
   <div class="home">
 
     <el-container>
-      <el-header height="100px">
+      <el-header height="90px">
         <img class="sysname" src="@/../public/img/loginlogo.png" alt="">
         <span class="curtime"><i class="el-icon-user-solid"></i> 当前登录：{{loginUser}}<i class="el-icon-time"></i>系统时间：{{ nowTime | date }}登录时间：{{loginTime | date}}</span>
-          
       </el-header>
 
       <el-container>
@@ -38,7 +37,7 @@
                 <el-menu-item index="/purchase/done-purchase-note">采购单了结</el-menu-item>
                 <el-menu-item index="/purchase/purchase-query">采购单查询</el-menu-item>
               </el-collapse-item>
-              <el-collapse-item name="3">\
+              <el-collapse-item name="3">
                 <template slot="title">
                   <i class="el-icon-office-building"></i>
                   <span>仓库管理</span>

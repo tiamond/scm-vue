@@ -36,7 +36,7 @@
         class="cmondBtn">
         <template slot-scope="scope">
           <el-button
-            @click.native.prevent="showDialog(scope.$index, proCateList)"
+            @click.native.prevent="showDialog(scope.row)"
             type="primary"
             size="mini">
             修改
@@ -51,16 +51,16 @@
       </el-table-column>
     </el-table>
 
-    <!-- 添加分类 -->
+    <!-- 添加 修改 分类 -->
     <el-dialog :title="dialogMsg" :visible.sync="dialogFormVisible" class="add-supplier">
-      <el-form size="mini" :model="dialogForm" :rules="dialogRules" :inline="true" class="demo-form-inline">
+      <el-form ref="proCateForm" size="mini" :model="dialogForm" :rules="dialogRules" :inline="true" class="demo-form-inline">
         <el-form-item label="分类编号" label-width="95px">
           <el-input v-model="dialogForm.categoryId" autocomplete="off" disabled placeholder="自动生成"></el-input>
         </el-form-item>
         <el-form-item label="分类名称" label-width="95px" prop="name">
           <el-input v-model="dialogForm.name" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="描述" label-width="95px">
+        <el-form-item label="描述" label-width="95px" prop="remark">
           <el-input v-model="dialogForm.remark" autocomplete="off"></el-input>
         </el-form-item>
       </el-form>
@@ -124,7 +124,8 @@ export default {
       dialogRules: {
         name: [
           { required: true }
-        ]
+        ],
+        remark: []
       },
       dialogForm: {
         name: '',
@@ -144,6 +145,7 @@ export default {
     this.getProCateList ()
   },
   methods: {
+    // 获取商品分类列表
     getProCateList (page = 1, categoryId) {
       this.loading = true
       axios({
@@ -166,6 +168,7 @@ export default {
     addCate () {
       this.dialogFormVisible = true
       this.isAddOrUpd = 'add'
+      this.initDialogForm()
     },
     // 分页
     pageChange (page) {
@@ -174,23 +177,29 @@ export default {
     },
     // 确认添加 修改
     updateProCate () {
-      axios({
-        method: 'POST',
-        url: `/api/main/sell/category/${this.isAddOrUpd}`,
-        data: qs.stringify(this.dialogForm)
-      }).then(
-        resp => {
-          console.log(resp.data)
-          const result = resp.data
-          this.dialogFormVisible = false
-          this.centerDialogVisible = true
-          this.titMsg = result.message
-          if (result.code == 2) {
-            this.getProCateList(this.page)
-            this.initDialogForm()
-          }
+      this.$refs['proCateForm'].validate(valid => {
+        if (valid) {
+          axios({
+            method: 'POST',
+            url: `/api/main/sell/category/${this.isAddOrUpd}`,
+            data: qs.stringify(this.dialogForm)
+          }).then(
+            resp => {
+              console.log(resp.data)
+              const result = resp.data
+              this.dialogFormVisible = false
+              this.centerDialogVisible = true
+              this.titMsg = result.message
+              if (result.code == 2) {
+                this.getProCateList(this.page)
+                // this.initDialogForm()
+              }
+            }
+          )
+        } else {
+          return false
         }
-      )
+      })
     },
     // 删除分裂
     deleteSupplier (index, data) {
@@ -221,23 +230,31 @@ export default {
       )
     },
     // 改
-    showDialog (index, data) {
-      const res = data[index]
-      this.dialogForm = res
+    showDialog (data) {
+      this.dialogForm = {
+        ...data
+      }
       this.isAddOrUpd = 'update'
       console.log(this.dialogForm)
       this.dialogFormVisible = true
     },
     // 初始化数据
     initDialogForm () {
-      this.dialogForm.name = ''
-      this.dialogForm.remark = ''
-      this.dialogForm.categoryId = ''
+      for(const t in this.dialogForm) {
+        this.dialogForm[t] = ''
+      }
     },
     // 取消
     cancelOpration () {
       this.dialogFormVisible = false
-      this.initDialogForm()
+    }
+  },
+  watch: {
+    dialogFormVisible: {
+      handler (val) {
+        val || this.initDialogForm()
+        val || this.$refs['proCateForm'].resetFields()
+      }
     }
   }
 }

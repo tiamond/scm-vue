@@ -71,7 +71,7 @@ export default {
       this.name = name
     },
     // 获取采购订单y
-    queryPoitem (payType, type = 2, page = 1) {
+    queryPoitem (payType, page = 1, type = 2) {
       this.loading = true
       axios({
         method: 'GET',

@@ -6,7 +6,7 @@
         <el-button 
           class="addUser"
           type="primary" 
-          @click="addCustomer" 
+          @click="addCustomer('cusForm')" 
           style="margin: 0 20px"
           size="small">
           添加客户
@@ -66,7 +66,7 @@
 
     <!-- 添加或者修改供应商对话框 -->
     <el-dialog :title="dialogMsg" :visible.sync="dialogFormVisible" class="add-supplier">
-      <el-form size="mini" :model="customerForm" :rules="CustomerRules" :inline="true" class="demo-form-inline">
+      <el-form size="mini" :model="customerForm" :rules="CustomerRules" :inline="true" class="demo-form-inline" ref="cusForm">
         <el-form-item label="客户编号" label-width="95px" prop="customerCode">
           <el-input v-model="customerForm.customerCode" autocomplete="off"></el-input>
         </el-form-item>
@@ -96,8 +96,8 @@
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">取 消</el-button>
-        <el-button type="primary" @click="updateCustomer">确 定</el-button>
+        <el-button @click="cancel('cusForm')">取 消</el-button>
+        <el-button type="primary" @click="updateCustomer('cusForm')">确 定</el-button>
       </div>
     </el-dialog>
 
@@ -180,10 +180,10 @@ export default {
           { required: true, message: '请输入联系人', trigger: 'blur' }
         ],
         tel: [
-          { required: true, message: '请输入联系人', trigger: 'blur' }
+          { required: true, message: '请输入手机号', trigger: 'blur' }
         ],
         address: [
-          { required: true }
+          { required: true, message: '请输入地址', trigger: 'blur' }
         ]
       },
     } 
@@ -203,7 +203,7 @@ export default {
       return `${y}-${m < 10 ? '0'+m : m}-${d < 10 ? '0'+d : d}`
     },
     // 添加客户
-    addCustomer () {
+    addCustomer (formName) {
       this.dialogFormVisible = true
       this.isAUD = 'add'
       this.customerForm.createDate = this.setNowTime()
@@ -229,22 +229,32 @@ export default {
       })
     },
     // 添加或者更新顾客
-    updateCustomer () {
-      this.dialogFormVisible = false
-      this.loading = true
-      this.customerAUD().then(({data}) => {
-        console.log(data)
-        if (data.code === 2) {
-          this.centerDialogVisible = true
-          this.titMsg = data.message
-          this.queryCustomer(this.page)
+    updateCustomer (formName) {
+      this.$refs[formName].validate(valid => {
+        if (valid) {
+          this.dialogFormVisible = false
+          this.loading = true
+          this.customerAUD().then(({data}) => {
+            console.log(data)
+            if (data.code === 2) {
+              this.centerDialogVisible = true
+              this.titMsg = data.message
+              this.queryCustomer(this.page)
+            } else {
+              this.centerDialogVisible = true
+              this.titMsg = data.message
+            }
+          }).catch((data) => {
+            console.log(data)
+          })
         } else {
-          this.centerDialogVisible = true
-          this.titMsg = data.message
+          return false
         }
-      }).catch((data) => {
-        console.log(data)
       })
+    },
+    cancel (formName) {
+      this.$refs[formName].resetFields()
+      this.dialogFormVisible = false;
     },
     // 发送客户增的请求
     customerAUD () {
@@ -263,7 +273,7 @@ export default {
     },
     // 修改
     showDialog (data) {
-      this.customerForm = data
+      this.customerForm = {...data}
       this.dialogFormVisible = true
       this.isAUD = 'update'
     },
@@ -298,16 +308,18 @@ export default {
     },
     // 初始化数据
     initCustommerForm () {
-      this.customerForm.createCode = ''
-      this.customerForm.name = ''
-      this.customerForm.passWord = ''
-      this.customerForm.contactor = ''
-      this.customerForm.address = ''
-      this.customerForm.postCode = ''
-      this.customerForm.createDate = ''
-      this.customerForm.tel = ''
-      this.customerForm.fax = ''
+      for (const t in this.customerForm) {
+        this.customerForm[t] = ''
+      }
     },
+  },
+  watch: {
+    dialogFormVisible: {
+      handler (val) {
+        val ||this.initCustommerForm()
+        val ||this.$refs['cusForm'].resetFields()
+      }
+    }
   }
 }
 </script>

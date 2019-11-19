@@ -85,6 +85,7 @@
       background
       @current-change="pageChange"
       layout="prev, pager, next"
+      :current-page="curpage"
       :total="total">
     </el-pagination>
 
@@ -241,6 +242,7 @@ export default {
   name: 'PurchaseQuery',
   data () {
     return {
+      curpage: 1,
       tableData: [],
       loading: true,
       tableColumns: [
@@ -283,7 +285,6 @@ export default {
       purchaseForm: {
         poitems: []
       },
-      page: 1,
       venderList: [],
       venderTotal: '',
       venderLoading: true,
@@ -300,9 +301,9 @@ export default {
   methods: {
     // 分页
     pageChange (page) {
-      this.page = page
+      this.curpage = page
       this.loading = true
-      this.sendAxios('query', this.queryForm.poId, this.queryForm.venderCode, this.queryForm.payType, this.queryForm.startDate, this.queryForm.endDate, this.queryForm.status).then(({data}) => {
+      this.sendAxios('query', this.queryForm.poId, this.queryForm.venderCode, this.queryForm.payType, this.queryForm.startDate, this.queryForm.endDate, this.queryForm.status, page).then(({data}) => {
         this.tableData = data.list
         this.loading = false
         this.total = data.total
@@ -351,6 +352,7 @@ export default {
         this.total = data.total
         console.log(this.tableData)
       })
+      this.curpage = 1
     },
     // 选择供应商查找
     choseSupplier () {

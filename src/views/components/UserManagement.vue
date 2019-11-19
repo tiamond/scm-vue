@@ -76,8 +76,13 @@
 
     <!-- 修改与添加框 -->
     <el-dialog :title="dialogMsg" :visible.sync="dialogFormVisible">
-      <el-form size="mini" :model="user" :inline="true" class="demo-form-inline">
-        <el-form-item label="用户账号" label-width="80px">
+      <el-form 
+        ref="userForm" 
+        size="mini" 
+        :model="user" 
+        :inline="true" 
+        class="demo-form-inline">
+        <el-form-item label="用户账号" label-width="80px" prop="account">
           <el-input v-model="user.account" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="姓名" label-width="80px">
@@ -157,7 +162,7 @@ export default {
         status: 0,
         modelcodes: []
       },
-      page: 1
+      page: 1,
     }
   },
   computed: {
@@ -259,7 +264,6 @@ export default {
             this.centerDialogVisible = true
             this.titMsg = result.message
           }
-          
         })
       }
     },
@@ -317,8 +321,16 @@ export default {
       this.user.name= ''
       this.user.passWord= ''
       this.user.createDate= ''
-      this.user.status= -1
+      this.user.status= 0
       this.user.modelcodes= []
+    }
+  },
+  watch: {
+    dialogFormVisible: {
+      handler (val) {
+        console.log(1)
+        val || this.initData()
+      }
     }
   }
 }

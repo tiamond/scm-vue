@@ -78,13 +78,11 @@ export default {
           page,
           type: 4
         }
-      }).then(
-        resp => {
-          this.poitemList = resp.data.list
-          this.tableTotal = resp.data.total
-          this.loading = false
-        }
-      )
+      }).then(resp => {
+        this.poitemList = resp.data.list
+        this.tableTotal = resp.data.total
+        this.loading = false
+      })
     }
   },
   components: {

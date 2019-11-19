@@ -20,6 +20,7 @@
       @getList="tableChangePage"
       :columnsType="'outstockColumns'"
       :loading="tableLoading"
+      :curPage="curPage"
     />
   </div>
 </template>
@@ -44,6 +45,7 @@ export default {
       form:{},
       tableTotal: 0,
       tableLoading: true,
+      curPage: 1,
     }
   },
   created () {
@@ -74,10 +76,12 @@ export default {
     // 查询
     queryReport () {
       this.getList(this.value2)
+      this.curPage = 1
     },
     // 分页 
     tableChangePage (page) {
       console.log(page)
+      this.curPage = page
       this.getList(this.value2, page)
     } 
   },
